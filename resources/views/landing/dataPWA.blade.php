@@ -19,17 +19,18 @@
 
             <div class="col-12">
                 <div class="card shadow-sm">
-                    <div class="card-body" style="height: 700px;">
+                    <div class="card-body" style="height: 500px;"> <!-- sebelumnya 500px -->
                         <canvas id="pcaChart"></canvas>
-                        <button class="btn btn-sm btn-outline-primary mb-3"
+                        <button class="btn btn-sm btn-outline-primary mt-3"
                             onclick="downloadChart('pcaChart', 'pca_dki')">Download Chart</button>
                     </div>
                 </div>
             </div>
+
             <hr>
             <div class="col-12">
                 <div class="card shadow-sm">
-                    <div class="card-body" style="height: 700px;">
+                    <div class="card-body" style="height: 500px;">
                         <canvas id="rantingChartJakpus"></canvas>
                         <button class="btn btn-sm btn-outline-primary mb-3"
                             onclick="downloadChart('rantingChartJakpus', 'ranting_Jakpus')">Download Chart</button>
@@ -39,7 +40,7 @@
             <hr>
             <div class="col-12">
                 <div class="card shadow-sm">
-                    <div class="card-body" style="height: 700px;">
+                    <div class="card-body" style="height: 500px;">
                         <canvas id="rantingChartJaksel"></canvas>
                         <button class="btn btn-sm btn-outline-primary mb-3"
                             onclick="downloadChart('rantingChartJaksel', 'ranting_Jaksel')">Download Chart</button>
@@ -49,7 +50,7 @@
             <hr>
             <div class="col-12">
                 <div class="card shadow-sm">
-                    <div class="card-body" style="height: 700px;">
+                    <div class="card-body" style="height: 500px;">
                         <canvas id="rantingChartJakbar"></canvas>
                         <button class="btn btn-sm btn-outline-primary mb-3"
                             onclick="downloadChart('rantingChartJakbar', 'ranting_Jakbar')">Download Chart</button>
@@ -59,7 +60,7 @@
             <hr>
             <div class="col-12">
                 <div class="card shadow-sm">
-                    <div class="card-body" style="height: 700px;">
+                    <div class="card-body" style="height: 500px;">
                         <canvas id="aumJakpusChart"></canvas>
                         <button class="btn btn-sm btn-outline-primary mb-3"
                             onclick="downloadChart('aumJakpusChart', 'aum_Jakpus')">Download Chart</button>
@@ -69,7 +70,7 @@
             <hr>
             <div class="col-12">
                 <div class="card shadow-sm">
-                    <div class="card-body" style="height: 700px;">
+                    <div class="card-body" style="height: 500px;">
                         <canvas id="aumJakselChart"></canvas>
                         <button class="btn btn-sm btn-outline-primary mb-3"
                             onclick="downloadChart('aumJakselChart', 'aum_Jaksel')">Download Chart</button>
@@ -79,7 +80,7 @@
             <hr>
             <div class="col-12">
                 <div class="card shadow-sm">
-                    <div class="card-body" style="height: 700px;">
+                    <div class="card-body" style="height: 500px;">
                         <canvas id="aumJaktimChart"></canvas>
                         <button class="btn btn-sm btn-outline-primary mb-3"
                             onclick="downloadChart('aumJaktimChart', 'aum_Jaktim')">Download Chart</button>
@@ -89,7 +90,7 @@
             <hr>
             <div class="col-12">
                 <div class="card shadow-sm">
-                    <div class="card-body" style="height: 700px;">
+                    <div class="card-body" style="height: 500px;">
                         <canvas id="aumJakbarChart"></canvas>
                         <button class="btn btn-sm btn-outline-primary mb-3"
                             onclick="downloadChart('aumJakbarChart', 'aum_Jakbar')">Download Chart</button>
@@ -99,15 +100,16 @@
             <hr>
             <div class="col-12">
                 <div class="card shadow-sm">
-                    <div class="card-body" style="height: 700px;">
+                    <div class="card-body" style="height: 500px;">
                         <canvas id="aumJakutChart"></canvas>
                         <button class="btn btn-sm btn-outline-primary mb-3"
                             onclick="downloadChart('aumJakutChart', 'aum_Jakut')">Download Chart</button>
                     </div>
                 </div>
             </div>
+            <hr>
 
-            <div class="col-12">
+            <div class="col-12 table-responsive">
                 <div class="card shadow-sm">
                     <div class="card-body">
                         <h3 class="text-center">Data ASET PWA DKI JAKARTA</h3>
@@ -210,6 +212,7 @@
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: false,
                 scales: {
                     y: {
                         beginAtZero: true,
