@@ -14,7 +14,7 @@
           <div id="nav" class="offcanvas-body ms-lg-auto d-flex flex-column h-100">
             <ul class="navbar-nav">
               <li class="nav-item"><a class="nav-link" href="{{'/'}}">Home</a></li>
-              <li class="nav-item"><a class="nav-link" href="{{url('/'.'#about')}}">About</a></li>
+              <li class="nav-item"><a class="nav-link" href="{{url('/'.'#about')}}">Profile</a></li>
               <li class="nav-item"><a class="nav-link" href="{{url('/'.'#news')}}">Berita</a></li>
               {{-- <li class="nav-item"><a class="nav-link" href="{{url('/'.'#contact')}}">Contact</a></li> --}}
             </ul>

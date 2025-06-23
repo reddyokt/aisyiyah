@@ -174,4 +174,9 @@ Route::group(['middleware' => 'prevent-back-history'], function () {
      Route::get('/proker/unrealized/{id}', [App\Http\Controllers\ProgramKerjaController::class, 'unrealized']);
      Route::get('/proker/realized/{id}', [App\Http\Controllers\ProgramKerjaController::class, 'realized']);
 
+    // Route::get('/cek-db', function() {
+    //     dd(config('database.connections.mysql.database'));
+    //     });
+
+
 });
