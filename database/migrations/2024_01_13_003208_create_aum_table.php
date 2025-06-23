@@ -17,13 +17,14 @@ return new class extends Migration
             $table->foreign('ranting_id')->references('ranting_id')->on('ranting')->onDelete('restrict');
             $table->unsignedBigInteger('pca_id')->index()->nullable();
             $table->foreign('pca_id')->references('pca_id')->on('pca')->onDelete('restrict');
-            $table->unsignedBigInteger('pda_id')->index()->nullable();
+            $table->unsignedBigInteger('pda_id')->index();
             $table->foreign('pda_id')->references('pda_id')->on('pda')->onDelete('restrict');
             $table->unsignedBigInteger('id_kepemilikan')->index();
             $table->foreign('id_kepemilikan')->references('id_kepemilikan')->on('kepemilikan')->onDelete('restrict');
             $table->unsignedBigInteger('id_bidangusaha')->index();
             $table->foreign('id_bidangusaha')->references('id_bidangusaha')->on('bidangusaha')->onDelete('restrict');
             $table->string('aum_name');
+            $table->enum('pengelolaby',['Ranting', 'PCA', 'PDA']);
             $table->longText('address')->nullable();
             $table->enum('isActive',['Yes','No'])->default('Yes');
             $table->integer('created_by')->nullable();

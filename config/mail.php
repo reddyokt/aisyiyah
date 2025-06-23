@@ -36,10 +36,9 @@ return [
     'mailers' => [
         'smtp' => [
             'transport' => 'smtp',
-            'host' => env('MAIL_HOST', 'smtp.mailgun.org'),
+            'host' => env('MAIL_HOST', 'smtp.hostinger.com'),
             'port' => env('MAIL_PORT', 587),
             'encryption' => 'tls',
-            'from' => ['address' => 'mail@kta.dpp-imm.or.id', 'name' => 'Aisyiyah DKI Jakarta'],
             'username' => env('MAIL_USERNAME'),
             'password' => env('MAIL_PASSWORD'),
             'timeout' => null,
@@ -85,7 +84,7 @@ return [
     */
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'mail@aisyiyahjakarta.org'),
+        'address' => env('MAIL_FROM_ADDRESS', 'admin@aisyiyahjakarta.org'),
         'name' => env('MAIL_FROM_NAME', 'Aisyiyah DKI Jakarta'),
     ],
 

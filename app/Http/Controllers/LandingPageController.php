@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\LandingPage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -9,6 +10,8 @@ class LandingPageController extends Controller
 {
     public function index()
     {
+        $landingprop = DB::table('landing_page')->where('landing_page.id_landing', '1')->first();
+
         $postLanding = DB::table('news')
                     ->leftJoin('user', 'user.user_id', '=' ,'news.created_by')
                     ->leftJoin('newscategory', 'newscategory.id_category', '=' ,'news.id_category')
@@ -21,7 +24,7 @@ class LandingPageController extends Controller
                                     news.images as images, user.username as author,
                                     newscategory.category as category,news.status as status, news.created_at as created_at'))
                     ->get()->toArray();
-        return view('landing.index', compact('postLanding'));
+        return view('landing.index', compact('postLanding','landingprop'));
     }
 
     public function postLanding()
@@ -67,5 +70,23 @@ class LandingPageController extends Controller
                     ->get()->toArray();
 
         return view('landing.blogpost',compact('postBlog','anotherpost'));
+    }
+
+    public function landingProperty()
+    {
+        $landing = DB::table('landing_page')->where('landing_page.id_landing', '1')->first();
+
+        return view('landing.landingprop', compact('landing'));
+    }
+
+    public function updateProperty(Request $request)
+    {
+        // dd($request); 
+
+        $update = LandingPage::find(1);
+        $update->update($request->all());
+
+        return redirect()->back()->with('success','Landing Property di update');
+
     }
 }

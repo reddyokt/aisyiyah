@@ -11,3 +11,12 @@ Homestead.json
 Homestead.yaml
 npm-debug.log
 yarn-error.log
+/public/upload/
+/storage/
+/*.zip
+*.docx
+*.jpg
+*.jpeg
+*.png
+*.pdf
+

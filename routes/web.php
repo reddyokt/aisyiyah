@@ -136,6 +136,9 @@ Route::group(['middleware' => 'prevent-back-history'], function () {
     Route::get('/aum/detail/{id}', [App\Http\Controllers\AumController::class, 'aumDetail']);
     Route::get('/aum/aumbypca', [App\Http\Controllers\AumController::class, 'aumByPca']);
     Route::get('/aum/aumbypda', [App\Http\Controllers\AumController::class, 'aumByPda']);
+    Route::get('/pcas/pcasbyrantings/{id}', [App\Http\Controllers\AumController::class, 'pcasByrantings']);
+    Route::get('/pdas/pdasbyrantings/{id}', [App\Http\Controllers\AumController::class, 'pdasByrantings']);
+    Route::get('/pdas/pdasbypcass/{id}', [App\Http\Controllers\AumController::class, 'pdasBypcass']);
     /*------------------11.News-----------------------------------------------*/
     Route::get('/newscategory', [App\Http\Controllers\NewsCategoryController::class, 'categoryIndex']);
     Route::get('/newscategory/create', [App\Http\Controllers\NewsCategoryController::class, 'createCategory']);
@@ -173,5 +176,10 @@ Route::group(['middleware' => 'prevent-back-history'], function () {
      Route::post('/proker/update/{id}', [App\Http\Controllers\ProgramKerjaController::class, 'storeUpdate']);
      Route::get('/proker/unrealized/{id}', [App\Http\Controllers\ProgramKerjaController::class, 'unrealized']);
      Route::get('/proker/realized/{id}', [App\Http\Controllers\ProgramKerjaController::class, 'realized']);
+
+
+     /*------------------13.Landing Property-----------------------------------------------*/
+     Route::get('/landingproperty', [App\Http\Controllers\LandingPageController::class, 'landingProperty']);
+     Route::post('/landingprop/update', [App\Http\Controllers\LandingPageController::class, 'updateProperty']);
 
 });

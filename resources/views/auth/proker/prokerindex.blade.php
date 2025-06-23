@@ -24,7 +24,7 @@
                 <div class="card-body">
                     <a href="/proker/create" type="button" class="btn btn-success waves-effect waves-light mb-3">
                         Create New </a>
-                    <table id="datatable" class="table table-bordered dt-responsive wrap"
+                    <table id="datatable-buttons" class="table table-bordered dt-responsive wrap"
                         style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                         <thead>
                             <tr>
@@ -68,33 +68,33 @@
                                     <td id="tooltip-container">
                                         <ul class="list-inline mb-0">
                                             @if ($proker->status != 'validatedbypwa')
-                                            <li class="list-inline-item">
-                                                <a href="/proker/edit/{{ $proker->id_proker }}" class="px-1 text-primary"
-                                                    data-bs-container="#tooltip-container" data-bs-toggle="tooltip"
-                                                    data-bs-placement="top" title="Edit"><i
-                                                        class="uil uil-pen font-size-14"></i></a>
-                                            </li>
+                                                <li class="list-inline-item">
+                                                    <a href="/proker/edit/{{ $proker->id_proker }}"
+                                                        class="px-1 text-primary" data-bs-container="#tooltip-container"
+                                                        data-bs-toggle="tooltip" data-bs-placement="top" title="Edit"><i
+                                                            class="uil uil-pen font-size-14"></i></a>
+                                                </li>
                                             @else
                                             @endif
 
-                                            @if ($proker->status == 'validatedbypwa' || 'realized')
-                                            <li class="list-inline-item">
-                                                <a href="/proker/update/{{ $proker->id_proker }}" class="px-1 text-primary"
-                                                    data-bs-container="#tooltip-container" data-bs-toggle="tooltip"
-                                                    data-bs-placement="top" title="Update"><i
-                                                        class="uil uil-clipboard-notes font-size-14"></i></a>
-                                            </li>
+                                            @if ($proker->status == 'validatedbypwa' or $proker->status == 'realized')
+                                                <li class="list-inline-item">
+                                                    <a href="/proker/update/{{ $proker->id_proker }}"
+                                                        class="px-1 text-primary" data-bs-container="#tooltip-container"
+                                                        data-bs-toggle="tooltip" data-bs-placement="top" title="Update"><i
+                                                            class="uil uil-clipboard-notes font-size-14"></i></a>
+                                                </li>
                                             @else
                                             @endif
-                                            
-                                            @if ($proker->status == 'validatedbypwa' || 'realized')
+
+                                            @if ($proker->status == 'validatedbypwa' or $proker->status == 'realized')
                                             @else
-                                            <li class="list-inline-item">
-                                                <a href="/proker/delete/{{ $proker->id_proker }}" class="px-1 text-danger"
-                                                    data-bs-container="#tooltip-container" data-bs-toggle="tooltip"
-                                                    data-bs-placement="top" title="Delete"><i
-                                                        class="uil uil-trash-alt font-size-14"></i></a>
-                                            </li>
+                                                <li class="list-inline-item">
+                                                    <a href="/proker/delete/{{ $proker->id_proker }}"
+                                                        class="px-1 text-danger" data-bs-container="#tooltip-container"
+                                                        data-bs-toggle="tooltip" data-bs-placement="top" title="Delete"><i
+                                                            class="uil uil-trash-alt font-size-14"></i></a>
+                                                </li>
                                             @endif
                                             <li class="list-inline-item">
                                                 <a href="/proker/detail/{{ $proker->id_proker }}" class="px-1 text-warning"
@@ -104,22 +104,23 @@
                                             </li>
 
                                             @if ($proker->status == 'validatedbypwa')
-                                            <li class="list-inline-item">
-                                                <a href="/proker/realized/{{ $proker->id_proker }}" class="px-1 text-success"
-                                                    data-bs-container="#tooltip-container" data-bs-toggle="tooltip"
-                                                    data-bs-placement="top" title="Terealisasi"><i
-                                                        class="bx bx-trophy font-size-14"></i></a>
-                                            </li>
+                                                <li class="list-inline-item">
+                                                    <a href="/proker/realized/{{ $proker->id_proker }}"
+                                                        class="px-1 text-success" data-bs-container="#tooltip-container"
+                                                        data-bs-toggle="tooltip" data-bs-placement="top"
+                                                        title="Terealisasi"><i class="bx bx-trophy font-size-14"></i></a>
+                                                </li>
                                             @else
                                             @endif
 
                                             @if ($proker->status == 'validatedbypwa')
-                                            <li class="list-inline-item">
-                                                <a href="/proker/unrealized/{{ $proker->id_proker }}" class="px-1 text-danger"
-                                                    data-bs-container="#tooltip-container" data-bs-toggle="tooltip"
-                                                    data-bs-placement="top" title="Tidak Terealisasi"><i
-                                                        class="bx bx-x-circle font-size-14"></i></a>
-                                            </li>
+                                                <li class="list-inline-item">
+                                                    <a href="/proker/unrealized/{{ $proker->id_proker }}"
+                                                        class="px-1 text-danger" data-bs-container="#tooltip-container"
+                                                        data-bs-toggle="tooltip" data-bs-placement="top"
+                                                        title="Tidak Terealisasi"><i
+                                                            class="bx bx-x-circle font-size-14"></i></a>
+                                                </li>
                                             @else
                                             @endif
                                         </ul>

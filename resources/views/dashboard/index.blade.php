@@ -53,8 +53,28 @@
     </div> <!-- end row-->
 
     <div class="row">
-        <input type="hidden" value="{{ Session::get('role_code') }}" id="roleCode">
-        @if (in_array(Session::get('role_code'), ['SUP', 'PWA1']))
+        <div class="col-xl-6">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title mb-4">Total Program Kerja Periode Aktif</h4>
+                    <input type="hidden" class="prokerData" value="{{ $allData['prokerData'] }}" />
+                    <div id="pie_chart" data-colors='["--bs-danger", "--bs-danger", "--bs-warning"]' class="apex-charts"
+                        dir="ltr"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-6">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title mb-4">Program Kerja per PDA</h4>
+                    <div id="column_chart" data-colors='["--bs-success", "--bs-danger", "--bs-warning"]' class="apex-charts"
+                        dir="ltr"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
             <div class="col-xl-6">
                 <div class="card">
                     <div class="card-body">
@@ -68,22 +88,23 @@
                     </div> <!-- end card-body-->
                 </div> <!-- end card-->
             </div> <!-- end col-->
-        @endif
-        <div class="col-xl-6">
-            <div class="card">
-                <div class="card-body">
-                    <h4 class="card-title mb-4">AUM aktif per PDA</h4>
-                    <div class="mt-3">
-                        <input type="hidden" class="totalPDAAum" value="{{ $allData['totalPDAAum'] }}" />
-                        <input type="hidden" class="pdaLists" value="{{ $allData['pdaLists'] }}" />
-                        <div id="aum_chart" data-colors='["--bs-success", "#dfe2e6", "--bs-warning"]' 
-                            class="apex-charts" dir="ltr"></div>
-                    </div>
-                </div> <!-- end card-body-->
-            </div> <!-- end card-->
-        </div> <!-- end Col -->
-    </div> <!-- end row-->
 
+
+            <div class="col-xl-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title mb-4">AUM aktif per PDA</h4>
+                        <div class="mt-3">
+                            <input type="hidden" class="totalPDAAum" value="{{ $allData['totalPDAAum'] }}" />
+                            <input type="hidden" class="pdaLists" value="{{ $allData['pdaLists'] }}" />
+                            <div id="aum_chart" data-colors='["--bs-success", "#dfe2e6", "--bs-warning"]'
+                                class="apex-charts" dir="ltr"></div>
+                        </div>
+                    </div> <!-- end card-body-->
+                </div> <!-- end card-->
+            </div> <!-- end Col -->
+
+    </div> <!-- end row-->
 
     @if (in_array(Session::get('role_code'), ['MDA1']))
         <div class="row">
@@ -91,7 +112,6 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="alert alert-warning alert-dismissible fade show text-center" role="alert">
-                            {{-- <i class="uil uil-exclamation-triangle me-2"></i> --}}
                             <h5 class="text-danger">Data Program Kerja Menunggu Validasi</h5>
                             <button type="button" class="btn-close close-icon" data-bs-dismiss="alert"
                                 aria-label="Close"></button>
@@ -148,20 +168,23 @@
                                                     </li>
                                                     <li class="list-inline-item">
                                                         <a href="/proker/detail/{{ $proker->id_proker }}"
-                                                            class="px-2 text-warning" data-bs-container="#tooltip-container"
+                                                            class="px-2 text-warning"
+                                                            data-bs-container="#tooltip-container"
                                                             data-bs-toggle="tooltip" data-bs-placement="top"
                                                             title="detail"><i class="uil uil-eye font-size-18"></i></a>
                                                     </li>
                                                     <li class="list-inline-item">
                                                         <a href="/proker/validasimda/{{ $proker->id_proker }}"
-                                                            class="px-2 text-success" data-bs-container="#tooltip-container"
+                                                            class="px-2 text-success"
+                                                            data-bs-container="#tooltip-container"
                                                             data-bs-toggle="tooltip" data-bs-placement="top"
                                                             title="detail"><i
                                                                 class="uil uil-check-circle font-size-18"></i></a>
                                                     </li>
                                                     <li class="list-inline-item">
                                                         <a href="/proker/delete/{{ $proker->id_proker }}"
-                                                            class="px-2 text-danger" data-bs-container="#tooltip-container"
+                                                            class="px-2 text-danger"
+                                                            data-bs-container="#tooltip-container"
                                                             data-bs-toggle="tooltip" data-bs-placement="top"
                                                             title="delete"><i
                                                                 class="uil uil-trash-alt font-size-18"></i></a>
@@ -184,7 +207,6 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="alert alert-warning alert-dismissible fade show text-center" role="alert">
-                            {{-- <i class="uil uil-exclamation-triangle me-2"></i> --}}
                             <h5 class="text-danger">Data Program Kerja Menunggu Validasi</h5>
                             <button type="button" class="btn-close close-icon" data-bs-dismiss="alert"
                                 aria-label="Close"></button>
@@ -206,7 +228,7 @@
                                     @foreach ($datapda as $proker)
                                         <tr>
                                             <td>{{ $proker->name }}</td>
-                                            <td>{{ $proker->typeproker}}</td>
+                                            <td>{{ $proker->typeproker }}</td>
                                             <td>{{ \Carbon\Carbon::parse($proker->start)->locale('id')->format('j F Y') }}
                                                 ~ {{ \Carbon\Carbon::parse($proker->end)->locale('id')->format('j F Y') }}
                                             </td>
@@ -278,112 +300,113 @@
             </div>
         </div>
     @elseif (in_array(Session::get('role_code'), ['SUP' || 'PWA1']))
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="card">
-                <div class="card-body">
-                    <div class="alert alert-warning alert-dismissible fade show text-center" role="alert">
-                        {{-- <i class="uil uil-exclamation-triangle me-2"></i> --}}
-                        <h5 class="text-danger">Data Program Kerja Menunggu Validasi</h5>
-                        <button type="button" class="btn-close close-icon" data-bs-dismiss="alert"
-                            aria-label="Close"></button>
-                    </div>
-                    @include('flashmessage')
-                    <div class="table-responsive mb-4">
-                        <table id="datatable-buttons" class="table table-bordered dt-responsive wrap"
-                            style="border-collapse: collapse; border-spacing: 0; width: 100%;">
-                            <thead>
-                                <th>Nama Program Kerja</th>
-                                <th>Jenis</th>
-                                <th>Waktu Pelaksanaan</th>
-                                <th>Anggaran</th>
-                                <th>Status</th>
-                                <th>Pengusul</th>
-                                <th>Action</th>
-                            </thead>
-                            <tbody>
-                                @foreach ($datapwa as $proker)
-                                    <tr>
-                                        <td>{{ $proker->name }}</td>
-                                        <td>{{ $proker->typeproker}}</td>
-                                        <td>{{ \Carbon\Carbon::parse($proker->start)->locale('id')->format('j F Y') }}
-                                            ~ {{ \Carbon\Carbon::parse($proker->end)->locale('id')->format('j F Y') }}
-                                        </td>
-                                        <td>{{ number_format($proker->anggaran, 2, ',', '.') }}</td>
-                                        <td>
-                                            @if ($proker->status == 'waiting')
-                                                <p>Menunggu</p>
-                                            @elseif($proker->status == 'validatedbymda')
-                                                <p>Sudah divalidasi oleh Ketua Majelis</p>
-                                            @elseif($proker->status == 'validatedbypda')
-                                                <p>Sudah divalidasi oleh Ketua PDA</p>
-                                            @elseif($proker->status == 'validatedbypwa')
-                                                <p>Sudah divalidasi oleh Ketua PWA</p>
-                                            @elseif($proker->status == 'rejectbymda')
-                                                <p>Ditolak oleh Ketua Majelis</p>
-                                            @elseif($proker->status == 'rejectbypda')
-                                                <p>Ditolak oleh Ketua PDA</p>
-                                            @elseif($proker->status == 'rejectbypwa')
-                                                <p>Ditolak oleh Ketua PWA</p>
-                                            @elseif($proker->status == 'realized')
-                                                <p>Terealisasi</p>
-                                            @elseif($proker->status == 'unrealized')
-                                                <p>Belum terealisasi</p>
-                                            @endif
-                                        </td>
-                                        <td>{{ $proker->username }}</td>
-                                        <td id="tooltip-container">
-                                            <ul class="list-inline mb-0">
-                                                <li class="list-inline-item">
-                                                    <a href="/proker/edit/{{ $proker->id_proker }}"
-                                                        class="px-2 text-primary"
-                                                        data-bs-container="#tooltip-container"
-                                                        data-bs-toggle="tooltip" data-bs-placement="top"
-                                                        title="Edit"><i class="uil uil-pen font-size-18"></i></a>
-                                                </li>
-                                                <li class="list-inline-item">
-                                                    <a href="/proker/detail/{{ $proker->id_proker }}"
-                                                        class="px-2 text-warning"
-                                                        data-bs-container="#tooltip-container"
-                                                        data-bs-toggle="tooltip" data-bs-placement="top"
-                                                        title="detail"><i class="uil uil-eye font-size-18"></i></a>
-                                                </li>
-                                                <li class="list-inline-item">
-                                                    <a href="/proker/validasipwa/{{ $proker->id_proker }}"
-                                                        class="px-2 text-success"
-                                                        data-bs-container="#tooltip-container"
-                                                        data-bs-toggle="tooltip" data-bs-placement="top"
-                                                        title="detail"><i
-                                                            class="uil uil-check-circle font-size-18"></i></a>
-                                                </li>
-                                                <li class="list-inline-item">
-                                                    <a href="/proker/delete/{{ $proker->id_proker }}"
-                                                        class="px-2 text-danger"
-                                                        data-bs-container="#tooltip-container"
-                                                        data-bs-toggle="tooltip" data-bs-placement="top"
-                                                        title="delete"><i
-                                                            class="uil uil-trash-alt font-size-18"></i></a>
-                                                </li>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="alert alert-warning alert-dismissible fade show text-center" role="alert">
+                            <h5 class="text-danger">Data Program Kerja Menunggu Validasi</h5>
+                            <button type="button" class="btn-close close-icon" data-bs-dismiss="alert"
+                                aria-label="Close"></button>
+                        </div>
+                        @include('flashmessage')
+                        <div class="table-responsive mb-4">
+                            <table id="datatable-buttons" class="table table-bordered dt-responsive wrap"
+                                style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                <thead>
+                                    <th>Nama Program Kerja</th>
+                                    <th>Jenis</th>
+                                    <th>Waktu Pelaksanaan</th>
+                                    <th>Anggaran</th>
+                                    <th>Status</th>
+                                    <th>Pengusul</th>
+                                    <th>Action</th>
+                                </thead>
+                                <tbody>
+                                    @foreach ($datapwa as $proker)
+                                        <tr>
+                                            <td>{{ $proker->name }}</td>
+                                            <td>{{ $proker->typeproker }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($proker->start)->locale('id')->format('j F Y') }}
+                                                ~ {{ \Carbon\Carbon::parse($proker->end)->locale('id')->format('j F Y') }}
+                                            </td>
+                                            <td>{{ number_format($proker->anggaran, 2, ',', '.') }}</td>
+                                            <td>
+                                                @if ($proker->status == 'waiting')
+                                                    <p>Menunggu</p>
+                                                @elseif($proker->status == 'validatedbymda')
+                                                    <p>Sudah divalidasi oleh Ketua Majelis</p>
+                                                @elseif($proker->status == 'validatedbypda')
+                                                    <p>Sudah divalidasi oleh Ketua PDA</p>
+                                                @elseif($proker->status == 'validatedbypwa')
+                                                    <p>Sudah divalidasi oleh Ketua PWA</p>
+                                                @elseif($proker->status == 'rejectbymda')
+                                                    <p>Ditolak oleh Ketua Majelis</p>
+                                                @elseif($proker->status == 'rejectbypda')
+                                                    <p>Ditolak oleh Ketua PDA</p>
+                                                @elseif($proker->status == 'rejectbypwa')
+                                                    <p>Ditolak oleh Ketua PWA</p>
+                                                @elseif($proker->status == 'realized')
+                                                    <p>Terealisasi</p>
+                                                @elseif($proker->status == 'unrealized')
+                                                    <p>Belum terealisasi</p>
+                                                @endif
+                                            </td>
+                                            <td>{{ $proker->username }}</td>
+                                            <td id="tooltip-container">
+                                                <ul class="list-inline mb-0">
+                                                    <li class="list-inline-item">
+                                                        <a href="/proker/edit/{{ $proker->id_proker }}"
+                                                            class="px-2 text-primary"
+                                                            data-bs-container="#tooltip-container"
+                                                            data-bs-toggle="tooltip" data-bs-placement="top"
+                                                            title="Edit"><i class="uil uil-pen font-size-18"></i></a>
+                                                    </li>
+                                                    <li class="list-inline-item">
+                                                        <a href="/proker/detail/{{ $proker->id_proker }}"
+                                                            class="px-2 text-warning"
+                                                            data-bs-container="#tooltip-container"
+                                                            data-bs-toggle="tooltip" data-bs-placement="top"
+                                                            title="detail"><i class="uil uil-eye font-size-18"></i></a>
+                                                    </li>
+                                                    <li class="list-inline-item">
+                                                        <a href="/proker/validasipwa/{{ $proker->id_proker }}"
+                                                            class="px-2 text-success"
+                                                            data-bs-container="#tooltip-container"
+                                                            data-bs-toggle="tooltip" data-bs-placement="top"
+                                                            title="detail"><i
+                                                                class="uil uil-check-circle font-size-18"></i></a>
+                                                    </li>
+                                                    <li class="list-inline-item">
+                                                        <a href="/proker/delete/{{ $proker->id_proker }}"
+                                                            class="px-2 text-danger"
+                                                            data-bs-container="#tooltip-container"
+                                                            data-bs-toggle="tooltip" data-bs-placement="top"
+                                                            title="delete"><i
+                                                                class="uil uil-trash-alt font-size-18"></i></a>
+                                                    </li>
 
-                                            </ul>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
     @endif
 
 @endsection
 @section('script')
     <!-- apexcharts -->
     <script src="{{ URL::asset('/assets/libs/apexcharts/apexcharts.min.js') }}"></script>
-    <script src="{{ URL::asset('/assets/js/pages/dashboard.init.js') }}"></script>
-    <script src="{{ URL::asset('assets/js/pages/modal.init.js') }}"></script>
+    <script src="{{ URL::asset('/assets/libs/datatables/datatables.min.js') }}"></script>
+    <script src="{{ URL::asset('/assets/libs/jszip/jszip.min.js') }}"></script>
+    <script src="{{ URL::asset('/assets/libs/pdfmake/pdfmake.min.js') }}"></script>
+    <script src="{{ URL::asset('/assets/js/pages/datatables.init.js') }}"></script>
     <script>
         $('#newpass, #confnewpass').on('keyup', function() {
             if ($('#newpass').val() == $('#confnewpass').val()) {
@@ -392,13 +415,17 @@
                 $('#message').html('Password Konfirmasi Tidak Cocok').css('color', 'red');
         });
     </script>
-    <script src="{{ URL::asset('/assets/libs/datatables/datatables.min.js') }}"></script>
-    <script src="{{ URL::asset('/assets/libs/jszip/jszip.min.js') }}"></script>
-    <script src="{{ URL::asset('/assets/libs/pdfmake/pdfmake.min.js') }}"></script>
-    <script src="{{ URL::asset('/assets/js/pages/datatables.init.js') }}"></script>
     <script>
         $('.close-icon').on('click', function() {
             $(this).closest('.card').fadeOut();
         })
     </script>
+    <script>
+        var labelPdaList = "{{__('Kader Aktif ')}}"
+        var labelPdaLists = "{{__('AUM Aktif ')}}"
+        var labelTerealisasi = "{{__('Terealisasi ')}}"
+        var labelTidak = "{{__('Tidak Terealisasi ')}}"
+        var labelProgress = "{{__('On Progress ')}}"
+    </script>
+    <script src="{{ URL::asset('/assets/js/pages/dashboard.init.js') }}"></script>
 @endsection

@@ -42,12 +42,12 @@
                             </div>
                             <div class="mt-4">
                                 <h5 class="mb-1">Pengelola : </h5> 
-                                                            @if ($aum->pda_id != Null)
+                                                            @if ($aum->pengelola == 'Ranting')
+                                                            <p class="font-size-14">Ranting {{$aum->ranting_name}} - PDA {{$aum->pda_name}}</p>
+                                                            @elseif ($aum->pengelola == 'PCA')
+                                                            <p class="font-size-14">PCA {{$aum->pca_name}} - PDA {{$aumm->pda_name}}</p>
+                                                            @elseif ($aum->pengelola == 'PDA')                                                  
                                                             <p class="font-size-14">PDA {{$aum->pda_name}}</p>
-                                                            @elseif ($aum->pca_id != Null)
-                                                            <p class="font-size-14">PCA {{$aum->pca_name}}</p>
-                                                            @elseif ($aum->ranting_id != Null)                                                    
-                                                            <p class="font-size-14">Ranting {{$aum->ranting_name}}</p>
                                                             @endif                                
                             </div>
                             <div class="mt-4">

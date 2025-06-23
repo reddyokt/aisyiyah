@@ -22,7 +22,7 @@
             @include('flashmessage')
                 <div class="card-body">
                     <h4 class="card-title">Isi Data</h4>
-                    <p class="card-title-desc">Lengkapi field dibawah ini untuk membuat sebuah Role Baru</p>
+                    <p class="card-title-desc">Lengkapi field dibawah ini untuk membuat sebuah Periode Baru</p>
                     <form action="/periode/create" method="POST" id="createnewperiode">
                         @csrf
                         <input type="hidden" value="{{ Auth::id() }}" name="id">

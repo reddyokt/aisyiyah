@@ -35,7 +35,7 @@
                             <div class="col-md-6">
                                 <div class="col-md-12">
                                     <label>News Category</label>
-                                    <select class="form-control" name="category[]" id="category">
+                                    <select class="form-control" name="category" id="category">
                                         @foreach ($newscategory as $key => $value)
                                             <option value="{{ $value->id_category }}"
                                                 {{ $value->id_category == $editpost->id_category ? 'selected' : '' }}>

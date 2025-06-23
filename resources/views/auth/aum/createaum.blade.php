@@ -46,24 +46,24 @@
                                 <label class="form-label col-form-label">Pengelolaan oleh</label>
                                 <div class="form-check form-check-inline">
                                     <input required class="form-group form-check-input" type="radio" name="inlineRadioOptions"
-                                        id="pengelola" value="1">
+                                        id="pengelola1" value="Ranting">
                                     <label class="form-check-label" for="inlineRadio1">Ranting</label>
                                 </div>
                                 <div class="form-check form-check-inline">
                                     <input class="form-group form-check-input" type="radio" name="inlineRadioOptions"
-                                        id="pengelola" value="2">
+                                        id="pengelola2" value="PCA">
                                     <label class="form-check-label" for="inlineRadio2">PCA</label>
                                 </div>
                                 <div class="form-check form-check-inline">
                                     <input class="form-group form-check-input" type="radio" name="inlineRadioOptions"
-                                        id="pengelola" value="3">
+                                        id="pengelola3" value="PDA">
                                     <label class="form-check-label" for="inlineRadio3">PDA</label>
                                 </div>
                             </div>
                             <div class="col-lg-12" id="divrantings" style="display: none;">
                                 <label class="form-label col-form-label">Pilih Ranting</label>
                                 <div class="col-lg-12">
-                                    <select class="form-group select2 form-control select2-multiple" name="ranting"
+                                    <select class="form-group select2 form-control select2-multiple" name="ranting_id"
                                         id="rantings" data-placeholder="{{ __('account.placeholder_rantings') }}">
                                     </select>
                                 </div>
@@ -76,11 +76,27 @@
                                     </select>
                                 </div>
                             </div>
+                            <div class="col-lg-6" id="divpcass" style="display: none;">
+                                <label class="form-label col-form-label">PCA</label>
+                                <div class="col-lg-12">
+                                    <select class="form-group select2 form-control select2-multiple" name="pca"
+                                        id="pcass" data-placeholder="{{ __('account.placeholder_pcass') }}" disabled>
+                                    </select>
+                                </div>
+                            </div>
                             <div class="col-lg-12" id="divpdas" style="display: none">
                                 <label class="form-label col-form-label">Pilih PDA</label>
                                 <div class="col-lg-12">
                                     <select class="form-group select2 form-control select2-multiple" name="pda"
-                                        id="pdas" data-placeholder="{{ __('account.placeholder_pdas') }}" required>
+                                        id="pdas" data-placeholder="{{ __('account.placeholder_pdas') }}">
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-lg-6" id="divpdass" style="display: none">
+                                <label class="form-label col-form-label">PDA</label>
+                                <div class="col-lg-12">
+                                    <select class="form-group select2 form-control select2-multiple" name="pda"
+                                        id="pdass" data-placeholder="{{ __('account.placeholder_pdass') }}" disabled>
                                     </select>
                                 </div>
                             </div>
@@ -137,7 +153,6 @@
                             </div>
                         </div>
                         <div class="d-flex flex-wrap gap-3">
-                            {{-- <button type="submit" class="btn btn-primary waves-effect waves-light w-md">Submit</button> --}}
                             <button type="submit" class="btn btn-primary waves-effect waves-light"
                                 id="sa-add-success">Simpan </button>
 

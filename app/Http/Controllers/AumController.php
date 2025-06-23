@@ -42,12 +42,13 @@ class AumController extends Controller
 
     public function storeCreateAum(Request $request)
     {
-        dd($request);
+        // dd($request);
 
         $aum = $request->validate([
             'inlineRadioOptions'=>'required',
             'kepemilikan'=>'required',
             'bidangusaha'=>'required',
+            'pda'=>'required',
             'name'=>'required'
         ]);
 
@@ -58,6 +59,7 @@ class AumController extends Controller
         $aum->pda_id = $request->pda;
         $aum->id_kepemilikan = $request->kepemilikan;
         $aum->id_bidangusaha = $request->bidangusaha;
+        $aum->pengelolaby = $request->inlineRadioOptions;
         $aum->aum_name = $request->name;
         $aum->address = $request->address;
         $aum->created_by = $request->id;
@@ -100,7 +102,7 @@ class AumController extends Controller
         ->leftJoin('ranting', 'ranting.ranting_id', '=' ,'aum.ranting_id')
         ->leftJoin('bidangusaha', 'bidangusaha.id_bidangusaha', '=' ,'aum.id_bidangusaha')
         ->leftJoin('kepemilikan', 'kepemilikan.id_kepemilikan', '=' ,'aum.id_kepemilikan')
-        ->select(DB::raw('aum.id_aum, aum.aum_name as aum_name, aum.address as address,
+        ->select(DB::raw('aum.id_aum, aum.aum_name as aum_name, aum.address as address, aum.pengelolaby as pengelola,
                     aum.isActive as status, pda.pda_id as pda_id, pda.pda_name as pda_name,
                     pca.pca_id as pca_id, pca.pca_name as pca_name, ranting.ranting_id as ranting_id, 
                     ranting.ranting_name as ranting_name, bidangusaha.name as bidangusaha, 
@@ -130,5 +132,35 @@ class AumController extends Controller
     {
         $pdas = DB::table('pda')->get()->toArray();
         return response()->json($pdas);
+    }
+
+    public function pcasByrantings($id)
+    {
+        $pca_id = DB::table('ranting')->where('ranting.ranting_id', $id)->first();
+        $pca = $pca_id->pca_id;
+
+        $pcass = DB::table('pca')->where('pca.pca_id', $pca)->get()->toArray();
+        return response()->json($pcass);
+
+    }
+
+    public function pdasByrantings($id)
+    {
+        $pda_id = DB::table('ranting')->where('ranting.ranting_id', $id)->first();
+        $pda = $pda_id->pda_id;
+
+        $pdass = DB::table('pda')->where('pda.pda_id', $pda)->get()->toArray();
+        return response()->json($pdass);
+
+    }
+
+    public function pdasBypcass($id)
+    {
+        $pda_id = DB::table('pca')->where('pca.pca_id', $id)->first();
+        $pda = $pda_id->pda_id;
+
+        $pdass = DB::table('pda')->where('pda.pda_id', $pda)->get()->toArray();
+        return response()->json($pdass);
+
     }
 }

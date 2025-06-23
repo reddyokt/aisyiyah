@@ -9,8 +9,8 @@
             <div class="row gx-0 gy-12 align-items-center">
                 <div class="col-md-10 offset-md-1 offset-lg-0 col-lg-6 content text-center text-lg-start"
                     data-cues="slideInDown" data-group="page-title" data-delay="600">
-                    <h1 class="display-2 mb-5 text-white">'Aisyiyah DKI Jakarta</h1>
-                    <p class="lead fs-lg lh-sm mb-7 pe-xl-10">Gerekan Perempuan Islam Berkemajuan</p>
+                    <h1 class="display-2 mb-5 text-white">{{$landingprop->header1}}</h1>
+                    <p class="lead fs-lg lh-sm mb-7 pe-xl-10">{{$landingprop->header2}}</p>
                     <div class="d-flex justify-content-center justify-content-lg-start" data-cues="slideInDown"
                         data-group="page-title-buttons" data-delay="900">
                         {{-- <span><a href="#" class="btn btn-lg btn-white rounded-pill me-2">Explore Now</a></span>
