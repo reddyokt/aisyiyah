@@ -65,6 +65,7 @@ class NewsController extends Controller
         $waktu = Carbon::now()->format('YmdHis');
         $usercreator = Session::get('username');
         $creatorid = Session::get('user_id');
+        $pp = null; // Inisialisasi $pp dengan nilai null
 
         if ($request->file('feature_image')) {
 
@@ -144,4 +145,51 @@ class NewsController extends Controller
 
         return view('auth.news.post.previewpost', compact('preview','role'));
     }
+    
+    public function storeEditPost(Request $request, $id)
+{
+    date_default_timezone_set('Asia/Jakarta');
+    $req = $request->all();
+
+    $waktu = Carbon::now()->format('YmdHis');
+    $usercreator = Session::get('username');
+    $creatorid = Session::get('user_id');
+    $pp = null; // Inisialisasi $pp dengan nilai null
+
+    if ($request->file('feature_image')) {
+        $extension = $request->file('feature_image')->getClientOriginalExtension();
+        $pp = 'feature_image' . '-' . $usercreator . '-' . $waktu . '.' . $extension;
+        $dataImage = $request->file('feature_image')->get();
+        File::put(public_path('upload/feature_image/' . $pp), $dataImage);
+    }
+    
+    // Mendapatkan nilai kategori dari permintaan
+    $category = $request->input('category');
+
+    // Jika kategori adalah array, ambil nilai pertama
+    $id_category = is_array($category) ? $category[0] : $category;
+
+    $updatepost = News::find($id);
+    $updatepost->news_title = $req['title'];
+    $updatepost->slug = Str::slug($req['title']);
+    $updatepost->news_body = $req['body'];
+    $updatepost->id_category = $req['category'];
+    
+    // Check if there's a new feature image to upload
+    if ($pp !== null) {
+        // Delete old feature image if exists
+        if ($updatepost->feature_image) {
+            $oldImagePath = public_path('upload/feature_image/' . $updatepost->feature_image);
+            if (File::exists($oldImagePath)) {
+                File::delete($oldImagePath);
+            }
+        }
+        $updatepost->feature_image = $pp;
+    }
+
+    $updatepost->save();
+
+    return redirect('/post')->with('success', 'News berhasil diupdate');
+}
+
 }

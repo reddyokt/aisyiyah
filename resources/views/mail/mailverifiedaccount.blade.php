@@ -90,10 +90,10 @@ $style = [
                                             Anda telah didaftarkan kedalam Sistem Aisyiyah PWA DKI Jakarta
                                             Berikut username dan password anda :
                                         </p>
-
+    
                                         <p style="{{$style['paragraph']}}">
                                            Username : {{ $username }}<br>
-                                           Password : {{ $password }}<br>
+                                           Password : {{ $password }}<br></br>
                                            Silahkan klik link berikut dan masukan username serta password anda <br> <a href="{{$url}}">{{$url}}</a>
                                         </p>
 

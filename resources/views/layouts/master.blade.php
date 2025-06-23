@@ -57,21 +57,21 @@
                             <label for="code" class="form-label col-form-label">Password saat ini</label>
                             <div class="col-lg-12">
                                 <input class="form-control" type="password" id="oldpass" name="oldpass"
-                                    placeholder="masukkan password saat ini" required>
+                                    placeholder="masukkan password saat ini" autocomplete="on" required>
                             </div>
                         </div>
                         <div class="col-lg-12">
                             <label for="code" class="form-label col-form-label">Password baru</label>
                             <div class="col-lg-12">
                                 <input class="form-control" type="password" id="newpass" name="newpass"
-                                    placeholder="masukkan password baru" minlength="6" required>
+                                    placeholder="masukkan password baru" minlength="6" autocomplete="on" required>
                             </div>
                         </div>
                         <div class="col-lg-12">
                             <label for="code" class="form-label col-form-label">Konfirmasi Password baru</label>
                             <div class="col-lg-12">
                                 <input class="form-control" type="password" id="confnewpass" name="confnewpass"
-                                    placeholder="konfirmasi password baru" minlength="6" required>
+                                    placeholder="konfirmasi password baru" minlength="6" autocomplete="on" required>
                                     <span id='message'></span>
                             </div>
                         </div>

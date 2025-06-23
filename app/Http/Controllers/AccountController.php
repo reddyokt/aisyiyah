@@ -45,86 +45,100 @@ class AccountController extends Controller
         return view('auth.masterdata.account.createaccount', compact('roleList'));
     }
 
-    public function storeAccount(Request $request)
-    {
-        // dd($request);
-        date_default_timezone_set('Asia/Jakarta');
+public function storeAccount(Request $request)
+{
 
-        $eight_random_str = strtolower(Str::random(6));
-        $three_random_num = mt_rand(1000, 9999);
-        $token_verified =  Str::random(32);
+    date_default_timezone_set('Asia/Jakarta');
 
-        $checkExist = DB::table('user')
-        ->where('email', $request->email)
-        ->orWhere('username', $request->username)
-        ->whereNull('delete_at')
-        ->first();
+    $eight_random_str = strtolower(Str::random(6));
+    $three_random_num = mt_rand(1000, 9999);
+    $token_verified =  Str::random(32);
 
-        // $dataImage = $request->file('image');
+    // dd($eight_random_str);
+    
+    $checkExist = DB::table('user')
+    ->where('email', $request->email)
+    ->orWhere('username', $request->username)
+    ->whereNull('delete_at')
+    ->first();
 
-        if ($checkExist) {
-            return back()->with('warning', 'Data dengan Username/Email tersebut sudah ada!');
-        } else {
-            $user = new User;
+    if ($checkExist) {
+        return back()->with('warning', 'Data dengan Username/Email tersebut sudah ada!');
+    } else {
+        // Check if there's an active user with role_id = 2
+        $existingUser = DB::table('user')
+            ->join('user_role', 'user.user_id', '=', 'user_role.user_id')
+            ->where('user_role.role_id', 2)
+            ->where('user.isActive', 'Y')
+            ->whereNull('user.delete_at')
+            ->exists();
+
+        if ($existingUser) {
+            return back()->with('warning', 'User dengan ROLE Ketua PWA sudah ada dan masih aktif');
+        }
+
+        $user = new User;
+
+        // Default profile picture if none uploaded
+        $pp = 'default_profile_picture.png';
+
+        if ($request->file('image')) {
             $extension = $request->file('image')->getClientOriginalExtension();
             $pp = $request->username.'.'.$extension;
-
-                if ($request->file('image')) {
-
-                    $extension = $request->file('image')->getClientOriginalExtension();
-                    $pp = $request->username.'.'.$extension;
-                    $dataImage = $request->file('image')->get();
-                    // $user->profile_picture = $request->file('image')->store(public_path('storage/profile_picture'), $pp);
-                    File::put(public_path('upload/profile_picture/'.$pp), $dataImage);
-
-                }
-
-            $user->username = $request->username;
-            $user->password = Hash::make('qwerty');
-            $user->name = $request->name;
-            $user->email = $request->email;
-            $user->phone = str_replace('-', '', $request->phone_number);
-            $user->pda_id = $request->pda;
-            $user->id_majelis = $request->majelis;
-            $user->profile_picture = $pp;
-            $user->created_at = date('Y-m-d H:i:s');
-            $user->created_by = Session::get('user_id');
-            $user->save();
-            // User::create($user);
-
-            $user_role = new UserRole();
-            $user_role->user_id = $user->user_id;
-            $user_role->role_id = $request->role;
-            $user_role->created_at = date('Y-m-d H:i:s');
-            $user_role->save();
-
-            $user_settings = new UserSetting();
-            $user_settings->user_id = $user->user_id;
-            $user_settings->created_at = date('Y-m-d H:i:s');
-            $user_settings->created_by = Session::get('username');
-            $user_settings->save();
-
-            if(env('BYPASS_NOTIF')){
-                $dataNotif = array(
-                    'to_name' => $request->name,
-                    'username' =>$request->username,
-                    'password' => $eight_random_str,
-                    'url' => url('verified/'.$token_verified)
-                );
-        
-                $to_name = $request->name;
-                $to_email = $request->email;
-                $subjectMail = "Verifikasi Akun Aisyiyah PWA DKI Jakarta";
-        
-                Mail::send("mail.mailverifiedaccount", $dataNotif, function($message) use ($to_name, $to_email, $subjectMail) {
-                    $message->to($to_email, $to_name)->subject($subjectMail);
-                    $message->from(config('mail.from.address'), config('mail.from.name'));
-                });
-            }
-
-            return redirect('/account')->with('success', 'Alhamdulillah Akun berhasil dibuat');
+            $dataImage = $request->file('image')->get();
+            File::put(public_path('upload/profile_picture/'.$pp), $dataImage);
         }
+        
+        $token =  Str::random(32);
+        $user->username = $request->username;
+        $user->password = Hash::make($eight_random_str);
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->phone = str_replace('-', '', $request->phone_number);
+        $user->pda_id = $request->pda;
+        $user->id_majelis = $request->majelis;
+        $user->profile_picture = $pp;
+        $user->created_at = date('Y-m-d H:i:s');
+        $user->created_by = Session::get('user_id');
+        $user->token_verified = $token;
+        $user->save();
+
+        $user_role = new UserRole();
+        $user_role->user_id = $user->user_id;
+        $user_role->role_id = $request->role;
+        $user_role->created_at = date('Y-m-d H:i:s');
+        $user_role->save();
+
+        $user_settings = new UserSetting();
+        $user_settings->user_id = $user->user_id;
+        $user_settings->created_at = date('Y-m-d H:i:s');
+        $user_settings->created_by = Session::get('username');
+        $user_settings->save();
+
+        if (env('BYPASS_NOTIF')) {
+            $dataNotif = array(
+                'to_name' => $request->name,
+                'username' => $request->username,
+                'password' => $eight_random_str,
+                'url' => url('verified/'.$token)
+            );
+
+            $to_name = $request->name;
+            $to_email = $request->email;
+            $subjectMail = "Verifikasi Akun Aisyiyah PWA DKI Jakarta";
+
+            Mail::send("mail.mailverifiedaccount", $dataNotif, function($message) use ($to_name, $to_email, $subjectMail) {
+                $message->to($to_email, $to_name)->subject($subjectMail);
+                $message->from(config('mail.from.address'), config('mail.from.name'));
+            });
+        }
+
+        return redirect('/account')->with('success', 'Alhamdulillah Akun berhasil dibuat');
+
+        return redirect('/account')->with('success', 'Alhamdulillah Akun berhasil dibuat');
     }
+    
+}
 
     public function editAccount($id)
     {
@@ -210,12 +224,12 @@ class AccountController extends Controller
         // $user->updated_by = Session::get('username');
         $user->save();
 
-        // user role
-        if($userRole->role_id != $req['role']){
-            $userRole->role_id = $req['role'];
-            // $userRole->updated_at = Session::get('username');
-            $userRole->save();
-        }
+        // // user role
+        // if($userRole->role_id != $req['role']){
+        //     $userRole->role_id = $req['role'];
+        //     // $userRole->updated_at = Session::get('username');
+        //     $userRole->save();
+        // }
 
         $user_settings = new UserSetting();
         $user_settings->user_id = $user->user_id;

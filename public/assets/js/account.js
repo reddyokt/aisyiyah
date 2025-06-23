@@ -7,151 +7,151 @@ $(document).on('change', '#role', function () {
         $('#divmajelis').css("display", "none");
         $('#divpda').css("display", "none");
 
-        } else if (val == 3) {
-            $.ajax({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                type: 'GET',
-                url: '/account/pda',
-                success: function (data) {
-                    $.each(data, function (index, option) {
-                        $('#pda').append($('<option>').val(option.pda_id).text(option.pda_name));
-                    });
-                }
-            });
+    } else if (val == 3) {
+        $.ajax({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            type: 'GET',
+            url: '/account/pda',
+            success: function (data) {
+                $.each(data, function (index, option) {
+                    $('#pda').append($('<option>').val(option.pda_id).text(option.pda_name));
+                });
+            }
+        });
 
-            $('#pda').html("")
-            $('#divmajelis').css("display", "none");
-            $('#divpda').css("display", "flex");
+        $('#pda').html("")
+        $('#divmajelis').css("display", "none");
+        $('#divpda').css("display", "flex");
 
-        } else if (val == 4) {
-            $.ajax({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                type: 'GET',
-                url: '/account/majelis',
-                success: function (data) {
-                    $.each(data, function (index, option) {
-                        $('#majelis').append($('<option>').val(option.id_majelis).text(option.name));
-                    });
-                }
-            });
+    } else if (val == 4) {
+        $.ajax({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            type: 'GET',
+            url: '/account/majelis',
+            success: function (data) {
+                $.each(data, function (index, option) {
+                    $('#majelis').append($('<option>').val(option.id_majelis).text(option.name));
+                });
+            }
+        });
 
-            $('#majelis').html("")
-            $('#divmajelis').css("display", "flex");
-            $('#divpda').css("display", "none");
+        $('#majelis').html("")
+        $('#divmajelis').css("display", "flex");
+        $('#divpda').css("display", "none");
 
-        } else if (val == 5) {
-            $.ajax({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                type: 'GET',
-                url: '/account/majelis',
-                success: function (data) {
-                    $.each(data, function (index, option) {
-                        $('#majelis').append($('<option>').val(option.id_majelis).text(option.name));
-                    });
-                }
-            });
+    } else if (val == 5) {
+        $.ajax({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            type: 'GET',
+            url: '/account/majelis',
+            success: function (data) {
+                $.each(data, function (index, option) {
+                    $('#majelis').append($('<option>').val(option.id_majelis).text(option.name));
+                });
+            }
+        });
 
-            $.ajax({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                type: 'GET',
-                url: '/account/pda',
-                success: function (data) {
-                    $.each(data, function (index, option) {
-                        $('#pda').append($('<option>').val(option.pda_id).text(option.pda_name));
-                    });
-                }
-            });
+        $.ajax({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            type: 'GET',
+            url: '/account/pda',
+            success: function (data) {
+                $.each(data, function (index, option) {
+                    $('#pda').append($('<option>').val(option.pda_id).text(option.pda_name));
+                });
+            }
+        });
 
-            $('#pda').html("")
-            $('#majelis').html("")
-            $('#divpda').css("display", "flex");
-            $('#divmajelis').css("display", "flex");
+        $('#pda').html("")
+        $('#majelis').html("")
+        $('#divpda').css("display", "flex");
+        $('#divmajelis').css("display", "flex");
 
-        }else if (val == 6) {
+    } else if (val == 6) {
 
-                $('#divmajelis').css("display", "none");
-                $('#divpda').css("display", "none");
+        $('#divmajelis').css("display", "none");
+        $('#divpda').css("display", "none");
 
-        } else if (val == 7) {
-            $.ajax({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                type: 'GET',
-                url: '/account/pda',
-                success: function (data) {
-                    $.each(data, function (index, option) {
-                        $('#pda').append($('<option>').val(option.pda_id).text(option.pda_name));
-                    });
-                }
-            });
+    } else if (val == 7) {
+        $.ajax({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            type: 'GET',
+            url: '/account/pda',
+            success: function (data) {
+                $.each(data, function (index, option) {
+                    $('#pda').append($('<option>').val(option.pda_id).text(option.pda_name));
+                });
+            }
+        });
 
-            $('#divpda').css("display", "flex");
-            $('#divmajelis').css("display", "none");
+        $('#divpda').css("display", "flex");
+        $('#divmajelis').css("display", "none");
 
 
-        } else if (val == 8) {
-            $.ajax({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                type: 'GET',
-                url: '/account/majelis',
-                success: function (data) {
-                    $.each(data, function (index, option) {
-                        $('#majelis').append($('<option>').val(option.id_majelis).text(option.name));
-                    });
-                }
-            });
+    } else if (val == 8) {
+        $.ajax({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            type: 'GET',
+            url: '/account/majelis',
+            success: function (data) {
+                $.each(data, function (index, option) {
+                    $('#majelis').append($('<option>').val(option.id_majelis).text(option.name));
+                });
+            }
+        });
 
-            $('#majelis').html("")
-            $('#divmajelis').css("display", "flex");
-            $('#divpda').css("display", "none");
+        $('#majelis').html("")
+        $('#divmajelis').css("display", "flex");
+        $('#divpda').css("display", "none");
 
-        } else if (val == 9) {
-            $.ajax({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                type: 'GET',
-                url: '/account/majelis',
-                success: function (data) {
-                    $.each(data, function (index, option) {
-                        $('#majelis').append($('<option>').val(option.id_majelis).text(option.name));
-                    });
-                }
-            });
+    } else if (val == 9) {
+        $.ajax({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            type: 'GET',
+            url: '/account/majelis',
+            success: function (data) {
+                $.each(data, function (index, option) {
+                    $('#majelis').append($('<option>').val(option.id_majelis).text(option.name));
+                });
+            }
+        });
 
-            $.ajax({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                type: 'GET',
-                url: '/account/pda',
-                success: function (data) {
-                    $.each(data, function (index, option) {
-                        $('#pda').append($('<option>').val(option.pda_id).text(option.pda_name));
-                    });
-                }
-            });
+        $.ajax({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            type: 'GET',
+            url: '/account/pda',
+            success: function (data) {
+                $.each(data, function (index, option) {
+                    $('#pda').append($('<option>').val(option.pda_id).text(option.pda_name));
+                });
+            }
+        });
 
-            $('#pda').html("")
-            $('#majelis').html("")
-            $('#divpda').css("display", "flex");
-            $('#divmajelis').css("display", "flex");
-        }
+        $('#pda').html("")
+        $('#majelis').html("")
+        $('#divpda').css("display", "flex");
+        $('#divmajelis').css("display", "flex");
+    }
 
-    });
+});
 
-    
+
 /*-----------------jskader---------------------------------*/
 $(document).on('change', '#pda', function () {
     var id = $(this).val();
@@ -234,125 +234,184 @@ $(document).on('change', '#pcaforranting', function () {
 
 });
 
-$(document).on('click', '#pengelola', function () {
-    var val = $(this).val();
-    if(val == '3') {
-        $.ajax({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            type: 'GET',
-            url: '/aum/aumbypda',
-            success: function (data) {
-                $.each(data, function (index, option) {
-                    $('#pdas').append($('<option>').val(option.pda_id).text(option.pda_name));
-                });
-            }
-        });
-
-        $('#pdas').removeAttr('disabled');
-        $('#rantings').attr('disabled',true);
-        $('#pcas').attr('disabled',true);
-
-        $('#pdas').html("")
-               
-        $('#divpdas').css("display", "initial");
-        $('#divpcas').css("display", "none");
-        $('#divrantings').css("display", "none");
-
-    
-        
-    } else if(val == '2') {
-            $.ajax({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                type: 'GET',
-                url: '/aum/aumbypca',
-                success: function (data) {
-                    $.each(data, function (index, option) {
-                        $('#pcas').append($('<option>').val(option.pca_id).text(option.pca_name));
-                    });
-                }
+// /*--------------------------------------------------------------------------------------------*/
+$(document).on('click', '#pengelola1', function () {
+    var id = $(this).val();
+    $.ajax({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        type: 'GET',
+        url: '/aum/aumbyranting/',
+        success: function (data) {
+            $.each(data, function (index, option) {
+                $('#rantings').append($('<option>').val(option.ranting_id).text(option.ranting_name));
             });
+        }
+    });
 
-            $.ajax({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                type: 'GET',
-                url: '/aum/aumbypda',
-                success: function (data) {
-                    $.each(data, function (index, option) {
-                        $('#pdas').append($('<option>').val(option.pda_id).text(option.pda_name));
-                    });
-                }
-            });
-            
-            $('#pcas').removeAttr('disabled');
-            $('#pdas').removeAttr('disabled');
-            $('#rantings').attr('disabled',true);
+    $('#rantings').removeAttr('disabled');
+    $('#rantings').html("")
 
-            $('#pcas').html("")
-            $('#pdas').html("")
+    $('#divrantings').css("display", "initial");
 
-            $('#divrantings').css("display", "none");
-            $('#divpcas').css("display", "initial");
-            $('#divpdas').css("display", "initial");
-            
-    } else if (val == '1') {
-        $.ajax({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            type: 'GET',
-            url: '/aum/aumbyranting',
-            success: function (data) {
-                $.each(data, function (index, option) {
-                    $('#rantings').append($('<option>').val(option.ranting_id).text(option.ranting_name));
-                });
-            }
-        });
-
-        $.ajax({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            type: 'GET',
-            url: '/aum/aumbypda',
-            success: function (data) {
-                $.each(data, function (index, option) {
-                    $('#pdas').append($('<option>').val(option.pda_id).text(option.pda_name));
-                });
-            }
-        });
-        
-        $('#rantings').removeAttr('disabled');
-        $('#pdas').removeAttr('disabled');
-        $('#pcas').attr('disabled',true);
-
-        $('#pdas').html("")
-        $('#rantings').html("")
-    
-        $('#divrantings').css("display", "initial");
-        $('#divpcas').css("display", "none");
-        $('#divpdas').css("display", "initial");
-    }
-        
+    $('#divpdas').css("display", "none");
+    $('#divpdass').css("display", "none");
+    $('#divpcas').css("display", "none");
+    $('#divpcass').css("display", "none");
 });
+
+$(document).on('click', '#pengelola2', function () {
+    var id = $(this).val();
+    $.ajax({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        type: 'GET',
+        url: '/aum/aumbypca',
+        success: function (data) {
+            $.each(data, function (index, option) {
+                $('#pcas').append($('<option>').val(option.pca_id).text(option.pca_name));
+            });
+        }
+    });
+
+    $.ajax({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        type: 'GET',
+        url: '/aum/aumbypda',
+        success: function (data) {
+            $.each(data, function (index, option) {
+                $('#pdas').append($('<option>').val(option.pda_id).text(option.pda_name));
+            });
+        }
+    });
+    $('#pcas').html("")
+    $('#pcas').removeAttr('disabled');
+    $('#divpcas').css("display", "initial");
+
+    $('#rantings').attr('disabled', true);
+    $('#pdas').attr('disabled', true);
+    $('#pdass').attr('disabled', true);
+
+    $('#divrantings').css("display", "none");
+
+    $('#divpdas').css("display", "none");
+    $('#divpdass').css("display", "none");
+    $('#divpcass').css("display", "none");
+
+});
+
+$(document).on('click', '#pengelola3', function () {
+    var id = $(this).val();
+    $.ajax({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        type: 'GET',
+        url: '/aum/aumbypda',
+        success: function (data) {
+            $.each(data, function (index, option) {
+                $('#pdas').append($('<option>').val(option.pda_id).text(option.pda_name));
+            });
+        }
+    });
+
+    $('#pdas').removeAttr('disabled');
+    $('#rantings').attr('disabled', true);
+    $('#pcas').attr('disabled', true);
+
+    $('#pdas').html("")
+
+    $('#divpdas').css("display", "initial");
+    $('#divpcas').css("display", "none");
+    $('#divpcass').css("display", "none");
+    $('#divrantings').css("display", "none");
+    $('#divpdass').css("display", "none");
+});
+
+$(document).on('change', '#rantings', function () {
+    var id = $(this).val();
+
+    $.ajax({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        type: 'GET',
+        url: '/pcas/pcasbyrantings/' + id,
+        success: function (data) {
+            $.each(data, function (index, option) {
+                $('#pcass').append($('<option>').val(option.pca_id).text(option.pca_name));
+            });
+        }
+    });
+
+    $.ajax({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        type: 'GET',
+        url: '/pdas/pdasbyrantings/' + id,
+        success: function (data) {
+            $.each(data, function (index, option) {
+                $('#pdass').append($('<option>').val(option.pda_id).text(option.pda_name));
+            });
+        }
+    });
+
+    $('#divpcass').css("display", "initial");
+    $('#divpdass').css("display", "initial");
+
+    $('#pdass').removeAttr('disabled');
+    $('#pcass').removeAttr('disabled');
+    $('#pcass').html("");
+    $('#pdass').html("")
+
+    // $('#rantings').attr('disabled',true);
+});
+
+$(document).on('change', '#pcas', function () {
+    var id = $(this).val();
+    $.ajax({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        type: 'GET',
+        url: '/pdas/pdasbypcass/' + id,
+        success: function (data) {
+            $.each(data, function (index, option) {
+                $('#pdass').append($('<option>').val(option.pda_id).text(option.pda_name));
+            });
+        }
+    });
+    $('#pdass').html("")
+
+    $('#divpcass').css("display", "none");
+    $('#rantings').css("display", "none");
+
+    $('#divpdass').css("display", "initial");
+    $('#divpdas').css("display", "none");
+
+    $('#pdass').removeAttr('disabled');
+
+    // $('#rantings').attr('disabled',true);
+});
+
 /*--------------------------------------------------------------------------------------------*/
 
-$(document).on('keydown', '.nums', function(e) {
+$(document).on('keydown', '.nums', function (e) {
     if (!((e.keyCode > 95 && e.keyCode < 106) ||
-            (e.keyCode > 47 && e.keyCode < 58) ||
-            e.keyCode == 8)) {
+        (e.keyCode > 47 && e.keyCode < 58) ||
+        e.keyCode == 8)) {
         return false;
     }
 });
 
-$(document).on('keyup', '.nums', function() {
+$(document).on('keyup', '.nums', function () {
     var n = parseInt($(this).val().replace(/\D/g, ''), 10);
-    if($(this).val() == ''){
+    if ($(this).val() == '') {
         $(this).val("0");
     } else {
         $(this).val(n.toLocaleString());

@@ -22,18 +22,18 @@ class ProgramKerjaController extends Controller
         return view('auth.proker.periodeindex', compact('periodeindex'));
     }
 
-    public function createPeriode ()
+    public function createPeriode()
     {
-      return view('auth.proker.createperiode');
+        return view('auth.proker.createperiode');
     }
-    public function storeCreatePeriode (Request $request)
+    public function storeCreatePeriode(Request $request)
     {
         // dd($request);
 
         $isActive = DB::table('periode')->where('isActive', 'Yes')->first();
-        if($isActive != Null){
+        if ($isActive != Null) {
 
-            return redirect()->back()->with('error','Tidak bisa membuat periode baru, Masih ada periode aktif');
+            return redirect()->back()->with('error', 'Tidak bisa membuat periode baru, Masih ada periode aktif');
         }
         $periode = new Periode;
 
@@ -42,10 +42,8 @@ class ProgramKerjaController extends Controller
         $periode->description = $request->description;
 
         $periode->save();
-        
+
         return redirect('/periode')->with('success', 'Alhamdulillah Periode berhasil dibuat');
-
-
     }
 
     public function editPeriode($id)
@@ -66,38 +64,69 @@ class ProgramKerjaController extends Controller
         return redirect('/periode')->with('success', 'Periode telah diedit');
     }
 
+    // public function prokerIndex()
+    // {
+    //     $role = Session::get('role_code');
+
+    //     if ($role == "SUP" || $role == "PWA1" || $role == "PWA2") {
+    //         $prokerindex = DB::table('proker')
+    //             ->leftJoin('periode', 'periode.id_periode', '=', 'proker.id_periode')
+    //             ->leftJoin('user', 'user.user_id', '=', 'proker.created_by')
+    //             ->leftJoin('pda', 'pda.pda_id', '=', 'user.pda_id')
+    //             ->whereNull('proker.deleted_at')
+    //             ->select(DB::raw('proker.id_proker as id_proker, proker.proker_name as name,
+    //         proker.prokerstart as start, proker.prokerend as end, proker.status as status,
+    //         proker.anggaran as anggaran, user.name as username, pda.pda_name as pda_name'))
+    //             ->get()->toArray();
+    //     } elseif ($role == "MDA1" || $role == "MWA1" || $role == "MDA2" || $role == "MWA2") {
+    //         $prokerindex = DB::table('proker')
+    //             ->leftJoin('periode', 'periode.id_periode', '=', 'proker.id_periode')
+    //             ->leftJoin('user', 'user.user_id', '=', 'proker.created_by')
+    //             ->leftJoin('pda', 'pda.pda_id', '=', 'user.pda_id')
+    //             ->whereNull('proker.deleted_at')
+    //             ->where('proker.typeproker', 'majelis')
+    //             ->where('proker.pda_id', Session::get('pda_id'))
+    //             ->select(DB::raw('proker.id_proker as id_proker, proker.proker_name as name,
+    //         proker.prokerstart as start, proker.prokerend as end, proker.status as status,
+    //         proker.anggaran as anggaran, user.name as username, pda.pda_name as pda_name'))
+    //             ->get()->toArray();
+    //     }
+
+    //     return view('auth.proker.prokerindex', compact('prokerindex'));
+    // }
+    
     public function prokerIndex()
-    {
-        $role = Session::get('role_code');
+{
+    $role = Session::get('role_code');
+    $prokerindex = []; // Initialize $prokerindex as an empty array
 
-        if ($role == "SUP" || $role == "PWA1" || $role == "PWA2") {
+    if ($role == "SUP" || $role == "PWA1" || $role == "PWA2") {
         $prokerindex = DB::table('proker')
-        ->leftJoin('periode', 'periode.id_periode', '=' ,'proker.id_periode')
-        ->leftJoin('user', 'user.user_id', '=' ,'proker.created_by')
-        ->leftJoin('pda', 'pda.pda_id', '=' ,'user.pda_id')
-        ->whereNull('proker.deleted_at')
-        ->select(DB::raw('proker.id_proker as id_proker, proker.proker_name as name,
-            proker.prokerstart as start, proker.prokerend as end, proker.status as status,
-            proker.anggaran as anggaran, user.name as username, pda.pda_name as pda_name'))
-        ->get()->toArray();
-        }
-
-        elseif ($role == "MDA1" || $role == "MWA1" || $role == "MDA2" || $role == "MWA2"){
+            ->leftJoin('periode', 'periode.id_periode', '=', 'proker.id_periode')
+            ->leftJoin('user', 'user.user_id', '=', 'proker.created_by')
+            ->leftJoin('pda', 'pda.pda_id', '=', 'user.pda_id')
+            ->whereNull('proker.deleted_at')
+            ->select(DB::raw('proker.id_proker as id_proker, proker.proker_name as name,
+        proker.prokerstart as start, proker.prokerend as end, proker.status as status,
+        proker.anggaran as anggaran, user.name as username, pda.pda_name as pda_name'))
+            ->get()->toArray();
+    } elseif ($role == "MDA1" || $role == "MWA1" || $role == "MDA2" || $role == "MWA2") {
         $prokerindex = DB::table('proker')
-        ->leftJoin('periode', 'periode.id_periode', '=' ,'proker.id_periode')
-        ->leftJoin('user', 'user.user_id', '=' ,'proker.created_by')
-        ->leftJoin('pda', 'pda.pda_id', '=' ,'user.pda_id')
-        ->whereNull('proker.deleted_at')
-        ->where('proker.typeproker', 'majelis')
-        ->where('proker.pda_id', Session::get('pda_id'))
-        ->select(DB::raw('proker.id_proker as id_proker, proker.proker_name as name,
-            proker.prokerstart as start, proker.prokerend as end, proker.status as status,
-            proker.anggaran as anggaran, user.name as username, pda.pda_name as pda_name'))
-        ->get()->toArray();
-        }
-
-        return view('auth.proker.prokerindex', compact('prokerindex'));
+            ->leftJoin('periode', 'periode.id_periode', '=', 'proker.id_periode')
+            ->leftJoin('user', 'user.user_id', '=', 'proker.created_by')
+            ->leftJoin('pda', 'pda.pda_id', '=', 'user.pda_id')
+            ->whereNull('proker.deleted_at')
+            ->where('proker.typeproker', 'majelis')
+            ->where('proker.pda_id', Session::get('pda_id'))
+            ->select(DB::raw('proker.id_proker as id_proker, proker.proker_name as name,
+        proker.prokerstart as start, proker.prokerend as end, proker.status as status,
+        proker.anggaran as anggaran, user.name as username, pda.pda_name as pda_name'))
+            ->get()->toArray();
     }
+
+    return view('auth.proker.prokerindex', compact('prokerindex'));
+}
+
 
     public function createProker()
     {
@@ -106,27 +135,24 @@ class ProgramKerjaController extends Controller
         $id_majelis = Session::get('id_majelis');
         $pda = DB::table('pda')->whereNull('deleted_at')->get()->toArray();
         $periode = DB::table('periode')->where('periode.isActive', 'Yes')->first();
-        $majelis = DB::table('majelis')->leftJoin('user', 'user.id_majelis', '=' ,'majelis.id_majelis')
-                   ->where('majelis.id_majelis', Session::get('id_majelis'))
-                   ->select(DB::raw('majelis.name as name'))->first();
+        $majelis = DB::table('majelis')->leftJoin('user', 'user.id_majelis', '=', 'majelis.id_majelis')
+            ->where('majelis.id_majelis', Session::get('id_majelis'))
+            ->select(DB::raw('majelis.name as name'))->first();
 
-        if($periode?->id_periode == Null){
+        if ($periode?->id_periode == Null) {
             $noperiode = '1';
             $dateend = '';
             $datestart = '';
+        } else {
 
+            $noperiode = '0';
+            $datestart = Carbon::parse($periode->from)->locale('id');
+            $datestart->settings(['formatFunction' => 'translatedFormat']);
+
+            $dateend = Carbon::parse($periode->to)->locale('id');
+            $dateend->settings(['formatFunction' => 'translatedFormat']);
         }
-        
-        else{
-
-        $noperiode = '0';
-        $datestart = Carbon::parse($periode->from)->locale('id');
-        $datestart->settings(['formatFunction' => 'translatedFormat']);
-
-        $dateend = Carbon::parse($periode->to   )->locale('id');
-        $dateend->settings(['formatFunction' => 'translatedFormat']);
-        }
-        return view('auth.proker.createproker', compact('noperiode','periode','datestart', 'dateend', 'role', 'pda', 'majelis', 'id_majelis'));
+        return view('auth.proker.createproker', compact('noperiode', 'periode', 'datestart', 'dateend', 'role', 'pda', 'majelis', 'id_majelis'));
     }
 
     public function storeCreateProker(Request $request)
@@ -157,7 +183,7 @@ class ProgramKerjaController extends Controller
         $proker_detail = new ProkerDetail;
         $proker_detail->id_proker = $proker->id_proker;
         $proker_detail->initial = $req['initial'];
-        $proker_detail->note_update = 'Program Kerja'.' '.$proker->proker_name.' '.'diajukan';
+        $proker_detail->note_update = 'Program Kerja' . ' ' . $proker->proker_name . ' ' . 'diajukan';
         $proker_detail->created_by = Session::get('user_id');
         $proker_detail->save();
 
@@ -167,27 +193,27 @@ class ProgramKerjaController extends Controller
     public function prokerDetail($id)
     {
         $proker = DB::table('proker')
-                    ->leftJoin('prokerdetail', 'prokerdetail.id_proker', '=' ,'proker.id_proker')
-                    ->leftJoin('pda', 'pda.pda_id', '=' ,'proker.pda_id')
-                    ->where('proker.id_proker', $id)
-                    ->whereNull('proker.deleted_at')
-                    ->select(DB::raw('proker.id_proker, proker.proker_name, proker.anggaran, proker.description,
+            ->leftJoin('prokerdetail', 'prokerdetail.id_proker', '=', 'proker.id_proker')
+            ->leftJoin('pda', 'pda.pda_id', '=', 'proker.pda_id')
+            ->where('proker.id_proker', $id)
+            ->whereNull('proker.deleted_at')
+            ->select(DB::raw('proker.id_proker, proker.proker_name, proker.anggaran, proker.description,
                                         proker.status, proker.prokerstart, proker.prokerend,
                                         prokerdetail.created_at as created_at, pda.pda_name as pda_name'))
-                    ->first();
+            ->first();
         $prokerdetail = DB::table('prokerdetail')
-                    ->where('prokerdetail.id_proker', $id)
-                    ->leftJoin('user', 'user.user_id', '=' ,'prokerdetail.created_by')
-                    ->select(DB::raw('prokerdetail.id_prokerdetail, prokerdetail.initial as initial, 
+            ->where('prokerdetail.id_proker', $id)
+            ->leftJoin('user', 'user.user_id', '=', 'prokerdetail.created_by')
+            ->select(DB::raw('prokerdetail.id_prokerdetail, prokerdetail.initial as initial, 
                                         prokerdetail.note_update as note_update, prokerdetail.created_at as created_at, 
                                         user.name as name, prokerdetail.proker_image'))
-                    ->get()->toArray();
-        
-        $prokerimage = DB::table('proker_image')
-                        ->where('proker_image.id_proker', $id)
-                        ->get()->toArray();
+            ->get()->toArray();
 
-        return view('auth.proker.prokerdetail', compact('proker','prokerdetail','prokerimage'));
+        $prokerimage = DB::table('proker_image')
+            ->where('proker_image.id_proker', $id)
+            ->get()->toArray();
+
+        return view('auth.proker.prokerdetail', compact('proker', 'prokerdetail', 'prokerimage'));
     }
 
     public function editProker($id)
@@ -196,9 +222,9 @@ class ProgramKerjaController extends Controller
         $pda = DB::table('pda')->whereNull('deleted_at')->get()->toArray();
 
         $editproker = DB::table('proker')
-            ->leftJoin('periode', 'periode.id_periode', '=' ,'proker.id_periode')
-            ->leftJoin('user', 'user.user_id', '=' ,'proker.created_by')
-            ->leftJoin('pda', 'pda.pda_id', '=' ,'user.pda_id')
+            ->leftJoin('periode', 'periode.id_periode', '=', 'proker.id_periode')
+            ->leftJoin('user', 'user.user_id', '=', 'proker.created_by')
+            ->leftJoin('pda', 'pda.pda_id', '=', 'user.pda_id')
             ->whereNull('proker.deleted_at')
             ->where('proker.id_proker', $id)
             ->select(DB::raw('proker.id_proker as id_proker, proker.proker_name as name,
@@ -221,48 +247,46 @@ class ProgramKerjaController extends Controller
     public function validasiMda(Request $request, $id)
     {
         $validasi = ProgramKerja::find($id);
-        $validasi->update(['status'=>'validatedbymda', 'updated_by' => Session::get('user_id')]);
+        $validasi->update(['status' => 'validatedbymda', 'updated_by' => Session::get('user_id')]);
 
         $proker_detail = new ProkerDetail;
         $proker_detail->id_proker = $validasi->id_proker;
         $proker_detail->initial = 'Update';
-        $proker_detail->note_update = 'Program Kerja'.' '.$validasi->proker_name.' '.'disetujui oleh Ketua Majelis';
+        $proker_detail->note_update = 'Program Kerja' . ' ' . $validasi->proker_name . ' ' . 'disetujui oleh Ketua Majelis';
         $proker_detail->created_by = Session::get('user_id');
         $proker_detail->save();
 
-        return redirect()->back()->with('success','Program Kerja telah disetujui');
-
+        return redirect()->back()->with('success', 'Program Kerja telah disetujui');
     }
 
     public function validasiPda(Request $request, $id)
     {
         $validasi = ProgramKerja::find($id);
-        $validasi->update(['status'=>'validatedbypda', 'updated_by' => Session::get('user_id')]);
+        $validasi->update(['status' => 'validatedbypda', 'updated_by' => Session::get('user_id')]);
 
         $proker_detail = new ProkerDetail;
         $proker_detail->id_proker = $validasi->id_proker;
         $proker_detail->initial = 'Update';
-        $proker_detail->note_update = 'Program Kerja'.' '.$validasi->proker_name.' '.'disetujui oleh Ketua PDA';
+        $proker_detail->note_update = 'Program Kerja' . ' ' . $validasi->proker_name . ' ' . 'disetujui oleh Ketua PDA';
         $proker_detail->created_by = Session::get('user_id');
         $proker_detail->save();
 
-        return redirect()->back()->with('success','Program Kerja telah disetujui');
+        return redirect()->back()->with('success', 'Program Kerja telah disetujui');
     }
 
     public function validasiPwa(Request $request, $id)
     {
         $validasi = ProgramKerja::find($id);
-        $validasi->update(['status'=>'validatedbypwa', 'updated_by' => Session::get('user_id')]);
+        $validasi->update(['status' => 'validatedbypwa', 'updated_by' => Session::get('user_id')]);
 
         $proker_detail = new ProkerDetail;
         $proker_detail->id_proker = $validasi->id_proker;
         $proker_detail->initial = 'Update';
-        $proker_detail->note_update = 'Program Kerja'.' '.$validasi->proker_name.' '.'disetujui oleh Ketua PWA, Program Kerja Dapat Dilaksanakan.';
+        $proker_detail->note_update = 'Program Kerja' . ' ' . $validasi->proker_name . ' ' . 'disetujui oleh Ketua PWA, Program Kerja Dapat Dilaksanakan.';
         $proker_detail->created_by = Session::get('user_id');
         $proker_detail->save();
 
-        return redirect()->back()->with('success','Program Kerja telah disetujui');
-
+        return redirect()->back()->with('success', 'Program Kerja telah disetujui');
     }
 
     public function updateProker($id)
@@ -271,40 +295,40 @@ class ProgramKerjaController extends Controller
         $pda = DB::table('pda')->whereNull('deleted_at')->get()->toArray();
 
         $proker = DB::table('proker')
-        ->leftJoin('prokerdetail', 'prokerdetail.id_proker', '=' ,'proker.id_proker')
-        ->leftJoin('pda', 'pda.pda_id', '=' ,'proker.pda_id')
-        ->where('proker.id_proker', $id)
-        ->whereNull('proker.deleted_at')
-        ->select(DB::raw('proker.id_proker as id_proker, proker.proker_name, proker.anggaran, proker.description,
+            ->leftJoin('prokerdetail', 'prokerdetail.id_proker', '=', 'proker.id_proker')
+            ->leftJoin('pda', 'pda.pda_id', '=', 'proker.pda_id')
+            ->where('proker.id_proker', $id)
+            ->whereNull('proker.deleted_at')
+            ->select(DB::raw('proker.id_proker as id_proker, proker.proker_name, proker.anggaran, proker.description,
                             proker.status, proker.prokerstart, proker.prokerend,
                             prokerdetail.created_at as created_at, pda.pda_name as pda_name'))
-        ->first();
+            ->first();
 
         $update = DB::table('proker')
-        ->leftJoin('prokerdetail', 'prokerdetail.id_proker', '=' ,'proker.id_proker')
-        ->leftJoin('pda', 'pda.pda_id', '=' ,'proker.pda_id')
-        ->where('proker.id_proker', $id)
-        ->whereNull('proker.deleted_at')
-        ->select(DB::raw('proker.id_proker as id_proker, proker.proker_name, proker.anggaran, proker.description,
+            ->leftJoin('prokerdetail', 'prokerdetail.id_proker', '=', 'proker.id_proker')
+            ->leftJoin('pda', 'pda.pda_id', '=', 'proker.pda_id')
+            ->where('proker.id_proker', $id)
+            ->whereNull('proker.deleted_at')
+            ->select(DB::raw('proker.id_proker as id_proker, proker.proker_name, proker.anggaran, proker.description,
                             proker.status, proker.prokerstart, proker.prokerend,
                             prokerdetail.created_at as created_at, pda.pda_name as pda_name'))
-        ->first();
+            ->first();
 
         // dd($proker->id_proker);
 
         $prokerdetail = DB::table('prokerdetail')
-        ->where('prokerdetail.id_proker', $id)
-        ->leftJoin('user', 'user.user_id', '=' ,'prokerdetail.created_by')
-        ->select(DB::raw('prokerdetail.id_prokerdetail, prokerdetail.initial as initial, 
+            ->where('prokerdetail.id_proker', $id)
+            ->leftJoin('user', 'user.user_id', '=', 'prokerdetail.created_by')
+            ->select(DB::raw('prokerdetail.id_prokerdetail, prokerdetail.initial as initial, 
                             prokerdetail.note_update as note_update, prokerdetail.created_at as created_at, 
                             user.name as name, prokerdetail.proker_image'))
-        ->get()->toArray();
+            ->get()->toArray();
 
         $prokerimage = DB::table('proker_image')
             ->where('proker_image.id_proker', $id)
             ->get()->toArray();
 
-        return view('auth.proker.updateproker', compact('proker','prokerdetail','prokerimage','role', 'pda', 'update'));
+        return view('auth.proker.updateproker', compact('proker', 'prokerdetail', 'prokerimage', 'role', 'pda', 'update'));
     }
 
     public function storeUpdate(Request $request, $id)
@@ -318,23 +342,20 @@ class ProgramKerjaController extends Controller
         $usercreator = Session::get('username');
         $creatorid = Session::get('user_id');
 
-        if($request->hasfile('images'))
-        {
-           foreach($request->file('images') as $image)
-           {
-               $namafile = str_replace(' ', '_', $request->name);
-               
-               $name =$namafile.'_'.time().rand(1,50).'.'.$image->extension();
-               // File::put(public_path('upload/aum/'.$name), $dataImage);
-               $image->move(public_path('/upload/proker/gallery/'), $name);
+        if ($request->hasfile('images')) {
+            foreach ($request->file('images') as $image) {
+                $namafile = str_replace(' ', '_', $request->name);
 
-               $storeupdate = new ProkerImage();
-               $storeupdate['id_proker']=$request->id_proker;
-               $storeupdate['images_proker']=str_replace('"', '', $name);
-               $storeupdate['created_by']=$request->id;
-               $storeupdate->save();
-  
-           }
+                $name = $namafile . '_' . time() . rand(1, 50) . '.' . $image->extension();
+                // File::put(public_path('upload/aum/'.$name), $dataImage);
+                $image->move(public_path('/upload/proker/gallery/'), $name);
+
+                $storeupdate = new ProkerImage();
+                $storeupdate['id_proker'] = $request->id_proker;
+                $storeupdate['images_proker'] = str_replace('"', '', $name);
+                $storeupdate['created_by'] = $request->id;
+                $storeupdate->save();
+            }
         }
 
         $proker_detail = new ProkerDetail;
@@ -344,43 +365,63 @@ class ProgramKerjaController extends Controller
         $proker_detail->created_by = Session::get('user_id');
         $proker_detail->save();
 
-        return redirect()->back()->with('success','Program Kerja telah diupdate');
-
+        return redirect()->back()->with('success', 'Program Kerja telah diupdate');
     }
 
     public function unrealized(Request $request, $id)
     {
-        $unrealized = DB::table('proker')
-                        ->where('proker.id_proker', $id)
-                        ->leftJoin('user','user.user_id','=','proker.created_by')
-                        ->select(DB::raw('proker.id_proker, user.name as name, proker.created_by as created_by'))
-                        ->first();
+        date_default_timezone_set('Asia/Jakarta');
 
-        if($unrealized->created_by != Session::get('user_id')){
-        return redirect()->back()->with('error','Anda tidak berhak mengubah status Tidak Terealisasi, 
-                                        Yang bisa mengubah adalah '.$unrealized->name);        
+        $unrealizeds = DB::table('proker')
+            ->where('proker.id_proker', $id)
+            ->leftJoin('user', 'user.user_id', '=', 'proker.created_by')
+            ->select(DB::raw('proker.id_proker, user.name as name, proker.created_by as created_by'))
+            ->first();
+
+        $unrealized = ProgramKerja::find($id);
+
+        if ($unrealized->created_by != Session::get('user_id')) {
+            return redirect()->back()->with('error', 'Anda tidak berhak mengubah status Tidak Terealisasi, 
+                                        Yang bisa mengubah adalah ' . $unrealizeds->name);
         }
 
-        $unrealized->update(['status'=>'unrealized', 'updated_by' => Session::get('user_id')]);
-        return redirect()->back()->with('warning','Program Kerja telah diubah statusnya menjadi Tidak Terealisasi');
-        
+        $unrealized->update(['status' => 'unrealized', 'updated_by' => Session::get('user_id')]);
+
+        $proker_detail = new ProkerDetail;
+        $proker_detail->id_proker = $id;
+        $proker_detail->initial = 'Finish';
+        $proker_detail->note_update = 'Program Kerja dihentikan dengan status Tidak Terealisasi';
+        $proker_detail->created_by = Session::get('user_id');
+        $proker_detail->save();
+
+        return redirect()->back()->with('warning', 'Program Kerja telah diubah statusnya menjadi Tidak Terealisasi');
     }
 
     public function realized(Request $request, $id)
     {
-        $realized = DB::table('proker')
-                        ->where('proker.id_proker', $id)
-                        ->leftJoin('user','user.user_id','=','proker.created_by')
-                        ->select(DB::raw('proker.id_proker, user.name as name, proker.created_by as created_by'))
-                        ->first();
+        date_default_timezone_set('Asia/Jakarta');
 
-        if($realized->created_by != Session::get('user_id')){
+        $realizeds = DB::table('proker')
+            ->where('proker.id_proker', $id)
+            ->leftJoin('user', 'user.user_id', '=', 'proker.created_by')
+            ->select(DB::raw('proker.id_proker, user.name as name, proker.created_by as created_by'))
+            ->first();
 
-        return redirect()->back()->with('error','Anda tidak berhak mengubah status Terealisasi!, 
-                                        Yang bisa mengubah adalah '.$realized->name);
+        $realized = ProgramKerja::find($id);
+
+        if ($realized->created_by != Session::get('user_id')) {
+            return redirect()->back()->with('error', 'Anda tidak berhak mengubah status Terealisasi!, 
+                                        Yang bisa mengubah adalah ' . $realizeds->name);
         }
 
-        $realized->update(['status'=>'realized', 'updated_by' => Session::get('user_id')]);
-        return redirect()->back()->with('success','Program Kerja telah diubah statusnya menjadi Terealisasi');
+        $realized->update(['status' => 'realized', 'updated_by' => Session::get('user_id')]);
+
+        $proker_detail = new ProkerDetail;
+        $proker_detail->id_proker = $id;
+        $proker_detail->initial = 'Finish';
+        $proker_detail->note_update = 'Program Kerja selesai dengan status Terealisasi';
+        $proker_detail->created_by = Session::get('user_id');
+        $proker_detail->save();
+        return redirect()->back()->with('success', 'Program Kerja telah diubah statusnya menjadi Terealisasi');
     }
 }
