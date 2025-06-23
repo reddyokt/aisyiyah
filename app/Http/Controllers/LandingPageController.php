@@ -89,4 +89,9 @@ class LandingPageController extends Controller
         return redirect()->back()->with('success','Landing Property di update');
 
     }
+
+    public function dataPwa()
+    {
+        return view ('landing.dataPWA');
+    }
 }

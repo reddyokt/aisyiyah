@@ -182,4 +182,9 @@ Route::group(['middleware' => 'prevent-back-history'], function () {
      Route::get('/landingproperty', [App\Http\Controllers\LandingPageController::class, 'landingProperty']);
      Route::post('/landingprop/update', [App\Http\Controllers\LandingPageController::class, 'updateProperty']);
 
+     /*------------------14.Data PWA-----------------------------------------------*/
+     Route::get('/dataPWA', [App\Http\Controllers\LandingPageController::class, 'dataPwa']);
+
+     
+
 });

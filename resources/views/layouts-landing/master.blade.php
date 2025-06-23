@@ -19,6 +19,8 @@
     </div>
     <script src="{{ URL::asset('landing/assets/js/plugins.js') }}"></script>
     <script src="{{ URL::asset('landing/assets/js/theme.js') }}"></script>
+    @yield('page-script')
+
 </body>
 
 </html>
