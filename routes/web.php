@@ -1,22 +1,11 @@
 <?php
 
+use App\Http\Controllers\PDAController;
 use App\Http\Controllers\PCAController;
 use App\Http\Controllers\RoleController;
 use App\Models\Role;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
-
 
 Auth::routes();
 
@@ -71,11 +60,11 @@ Route::group(['middleware' => 'prevent-back-history'], function () {
     Route::get('verified/{token}', [App\Http\Controllers\AuthenticationController::class, 'verifiedAccount'])->name('authentication.verifiedAccount');
 
     /*--------------------3.pda------------------------------------------------*/
-    Route::get('/pda', [App\Http\Controllers\PdaController::class, 'pdaIndex']);
+    Route::get('/pda', [App\Http\Controllers\PdaController::class, 'pdaIndex'])->name('pdaIndex');
     Route::get('/pda/create', [App\Http\Controllers\PdaController::class, 'createPda']);
     Route::post('/pda/create', [App\Http\Controllers\PdaController::class, 'storeCreatePda']);
     Route::get('/pda/edit/{id}', [App\Http\Controllers\PdaController::class, 'editPda']);
-    Route::post('/pda/edit/{id}', [App\Http\Controllers\PdaController::class, 'storeEditPda']);
+    Route::put('/pda/update/{id}', [App\Http\Controllers\PdaController::class, 'updatePda']);
     Route::post('/pda/delete/{id}', [App\Http\Controllers\PdaController::class, 'deletePda']);
     /*--------------------4.pca------------------------------------------------*/
     Route::get('/pca', [App\Http\Controllers\PcaController::class, 'pcaIndex']);
@@ -83,7 +72,7 @@ Route::group(['middleware' => 'prevent-back-history'], function () {
     Route::post('/pca/create', [App\Http\Controllers\PcaController::class, 'storeCreatePca']);
     Route::get('/pca/edit/{id}', [App\Http\Controllers\PcaController::class, 'editPca']);
     Route::post('/pca/edit/{id}', [App\Http\Controllers\PcaController::class, 'storeEditPca']);
-    Route::post('/pca/delete/{id}', [App\Http\Controllers\PcaController::class, 'deletePca']);
+    Route::put('/pca/update/{id}', [App\Http\Controllers\PcaController::class, 'updatePca']);
     Route::get('/pca/pdabydistricts/{id}', [App\Http\Controllers\PcaController::class, 'pdaBydistricts']);
     /*------------------5.kader-----------------------------------------------*/
     Route::get('/kader', [App\Http\Controllers\KaderController::class, 'kaderIndex']);
@@ -115,12 +104,14 @@ Route::group(['middleware' => 'prevent-back-history'], function () {
     Route::post('/surat/create', [App\Http\Controllers\SuratController::class, 'storeCreateSurat']);
     Route::get('/inbox/read/{id}', [App\Http\Controllers\SuratController::class, 'readInbox']);
     Route::get('/sent/read/{id}', [App\Http\Controllers\SuratController::class, 'readSend']);
+    Route::get('/inbox/read/{id}', [App\Http\Controllers\SuratController::class, 'readSurat']);
+
     /*------------------9.ranting-----------------------------------------------*/
     Route::get('/ranting', [App\Http\Controllers\RantingController::class, 'rantingIndex']);
     Route::get('/ranting/create', [App\Http\Controllers\RantingController::class, 'createRanting']);
     Route::post('/ranting/create', [App\Http\Controllers\RantingController::class, 'storeCreateRanting']);
     Route::get('/ranting/edit/{id}', [App\Http\Controllers\RantingController::class, 'editRanting']);
-    Route::post('/ranting/edit/{id}', [App\Http\Controllers\RantingController::class, 'storeEditRanting']);
+    Route::put('/ranting/update/{id}', [App\Http\Controllers\RantingController::class, 'updateRanting']);
     Route::post('/ranting/delete/{id}', [App\Http\Controllers\RantingController::class, 'deleteRanting']);
     Route::get('/ranting/pcabyvillages/{id}', [App\Http\Controllers\PcaController::class, 'pcaByvillages']);
     Route::get('/ranting/pcabypdass/{id}', [App\Http\Controllers\PcaController::class, 'pcaBypdass']);
@@ -183,7 +174,10 @@ Route::group(['middleware' => 'prevent-back-history'], function () {
      Route::post('/landingprop/update', [App\Http\Controllers\LandingPageController::class, 'updateProperty']);
 
      /*------------------14.Data PWA-----------------------------------------------*/
-     Route::get('/dataPWA', [App\Http\Controllers\LandingPageController::class, 'dataPwa']);
+     Route::get('/dataPWA', [App\Http\Controllers\LandingPageController::class, 'dataPwaNew']);
+     Route::get('/dataPWANew', [App\Http\Controllers\LandingPageController::class, 'dataPwaNew']);
+     Route::get('/detail/pda/{id}', [App\Http\Controllers\LandingPageController::class, 'dataDetailPda']);
+
 
      
 
