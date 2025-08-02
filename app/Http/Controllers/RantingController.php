@@ -153,4 +153,40 @@ class RantingController extends Controller
         return redirect('/ranting')->with('success', 'Data Ranting berhasil diperbarui');
     }
 
+    public function deleteRanting($id)
+    {
+        try {
+            $rantingId = Crypt::decrypt($id);
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'ID tidak valid.');
+        }
+
+        $childTables = [
+            ['table' => 'kader_info', 'column' => 'ranting_id'],
+            ['table' => 'aum', 'column' => 'ranting_id'],
+        ];
+
+        foreach ($childTables as $child) {
+            $exists = DB::table($child['table'])
+                ->where($child['column'], $rantingId)
+                ->whereNull('deleted_at')
+                ->exists();
+
+            if ($exists) {
+                return redirect()->back()
+                    ->with('error', "Tidak bisa menghapus ranting karena masih digunakan di tabel {$child['table']}.");
+            }
+        }
+
+        DB::table('ranting')
+            ->where('ranting_id', $rantingId)
+            ->update([
+                'deleted_at' => now(),
+            ]);
+
+        return redirect()->back()
+            ->with('success', 'Ranting berhasil dihapus.');
+    }
+
+
 }

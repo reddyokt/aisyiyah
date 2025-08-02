@@ -53,10 +53,10 @@
                                                 <a href="{{url('pda/edit/'. Crypt::encrypt($pda['pda_id']))}}" class="px-2 text-primary"><i
                                                         class="uil uil-pen font-size-18"></i></a>
                                             </li>
-                                            <li class="list-inline-item">
+                                            {{-- <li class="list-inline-item">
                                                 <a href="{{url('pda/delete/'. Crypt::encrypt($pda['pda_id']))}}" class="px-2 text-danger"><i
                                                         class="uil uil-trash-alt font-size-18"></i></a>
-                                            </li>
+                                            </li> --}}
                                         </ul>
                                     </td>
                                 </tr>

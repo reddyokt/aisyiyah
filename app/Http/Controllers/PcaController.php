@@ -165,5 +165,43 @@ class PCAController extends Controller
         return redirect('/pca')->with('success', 'Data PCA berhasil diperbarui');
     }
 
+    public function deletePca($id)
+    {
+        try {
+            $pcaId = Crypt::decrypt($id);
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'ID PCA tidak valid.');
+        }
+
+        $childTables = [
+            ['table' => 'document', 'column' => 'pca_id'],
+            ['table' => 'kader_info', 'column' => 'pca_id'],
+            ['table' => 'aum', 'column' => 'pca_id'],
+            ['table' => 'ranting', 'column' => 'pca_id'],
+            // 'pca' tidak dicek karena itu tabel yang dihapus
+        ];
+
+        foreach ($childTables as $child) {
+            $exists = DB::table($child['table'])
+                ->where($child['column'], $pcaId)
+                ->whereNull('deleted_at')
+                ->exists();
+
+            if ($exists) {
+                return redirect()->back()
+                    ->with('error', "Tidak bisa menghapus PCA karena masih digunakan di tabel {$child['table']}.");
+            }
+        }
+
+        DB::table('pca')
+            ->where('pca_id', $pcaId)
+            ->update([
+                'deleted_at' => now(),
+            ]);
+
+        return redirect()->back()
+            ->with('success', 'PCA berhasil dihapus.');
+    }
+
 
 }

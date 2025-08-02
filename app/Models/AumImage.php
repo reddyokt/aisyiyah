@@ -11,7 +11,9 @@ class AumImage extends Model
 
     protected $table = 'aum_image';
     protected $fillable = ['id_aum',
-                           'images'
+                           'images', 
+                           'deleted_at', 
+                           'created_by'
                             ];
     protected $primaryKey = 'id_aum_image';
 

@@ -37,26 +37,26 @@
                         <h5 class="font-size-16">Amal Usaha Muhammadiyah</h5>
                         <div class="table-responsive mt-4">
                             <div>
-                                <h5 class="mb-1">Name AUM:</h5>
+                                <h5 class="mb-1">Nama AUM:</h5>
                                 <p class="font-size-14">{{ $aum->aum_name }}</p>
                             </div>
                             <div class="mt-4">
-                                <h5 class="mb-1">Pengelola : </h5> 
-                                                            @if ($aum->pengelola == 'Ranting')
-                                                            <p class="font-size-14">Ranting {{$aum->ranting_name}} - PDA {{$aum->pda_name}}</p>
-                                                            @elseif ($aum->pengelola == 'PCA')
-                                                            <p class="font-size-14">PCA {{$aum->pca_name}} - PDA {{$aumm->pda_name}}</p>
-                                                            @elseif ($aum->pengelola == 'PDA')                                                  
-                                                            <p class="font-size-14">PDA {{$aum->pda_name}}</p>
-                                                            @endif                                
+                                <h5 class="mb-1">Pengelola : </h5>
+                                @if ($aum->pengelola == 'Ranting')
+                                    <p class="font-size-14">Ranting {{ $aum->ranting_name }} - PDA {{ $aum->pda_name }}</p>
+                                @elseif ($aum->pengelola == 'PCA')
+                                    <p class="font-size-14">PCA {{ $aum->pca_name }} - PDA {{ $aum->pda_name }}</p>
+                                @elseif ($aum->pengelola == 'PDA')
+                                    <p class="font-size-14">PDA {{ $aum->pda_name }}</p>
+                                @endif
                             </div>
                             <div class="mt-4">
                                 <h5 class="mb-1">Bidang Usaha :</h5>
-                                <p class="font-size-14">{{$aum->bidangusaha}}</p>
+                                <p class="font-size-14">{{ $aum->bidangusaha }}</p>
                             </div>
                             <div class="mt-4">
                                 <h5 class="mb-1">Kepemilikan :</h5>
-                                <p class="font-size-14">{{$aum->kepemilikan}}</p>
+                                <p class="font-size-14">{{ $aum->kepemilikan }}</p>
                             </div>
                         </div>
                     </div>
@@ -72,23 +72,33 @@
                             <div>
                                 <div class="mt-4">
                                     {{-- <i class="uil-map-marker"></i><p class="mb-1">Alamat :</p> --}}
-                                    <h5 class="font-size-16 mb-3"><i class="uil uil-map-marker font-size-20 align-middle me-2"></i> Lokasi AUM</h5>
-                                    <p class="font-size-14">{{$aum->address}}</p>
+                                    <h5 class="font-size-16 mb-3"><i
+                                            class="uil uil-map-marker font-size-20 align-middle me-2"></i> Lokasi AUM</h5>
+                                    <p class="font-size-14">{{ $aum->address }}</p>
                                 </div>
                                 <div class="mt-4">
-                                    <p class="mb-1">Galerry  :</p>
+                                    <p class="mb-1">Galeri :</p>
                                     <div class="zoom-gallery">
-                                        @foreach ($aum_image as $image)
+                                        @forelse ($aum_image as $image)
                                             @if ($image->images != null)
-                                                <a class="border-primary rounded" href="{{ '/../upload/aum/' . $image->images }}" title="{{$image->images}}">
-                                                    <img  src="{{ '/../upload/aum/' . $image->images }}" class="img-fluid p-3" alt="{{$image->images}}" width="40%;"> 
+                                                <a class="border-primary rounded"
+                                                    href="{{ asset('upload/aum/' . $image->images) }}"
+                                                    title="{{ $image->images }}">
+                                                    <img src="{{ asset('upload/aum/' . $image->images) }}"
+                                                        class="img-fluid p-3" alt="{{ $image->images }}"
+                                                        style="width:40%;">
                                                 </a>
                                             @else
-                                                <img src="{{ URL::asset('assets/media/Image_not_available.png') }}" alt=""
-                                                    class="img-fluid mx-auto d-block">
-                                            @endif                                                          
-                                        @endforeach                                               
-                                    </div>                     
+                                                <img src="{{ URL::asset('assets/media/Image_not_available.png') }}"
+                                                    alt="Tidak ada gambar" class="img-fluid mx-auto d-block" style="width:40%;">
+                                            @endif
+                                        @empty
+                                            <img src="{{ URL::asset('assets/media/Image_not_available.png') }}"
+                                                alt="Tidak ada gambar" class="img-fluid mx-auto d-block" style="width:40%;">
+                                        @endforelse
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
                     </div>
@@ -96,7 +106,6 @@
             </div>
         </div>
     </div>
-</div>
     <!-- end row -->
 @endsection
 @section('script')

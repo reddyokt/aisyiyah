@@ -74,6 +74,7 @@ Route::group(['middleware' => 'prevent-back-history'], function () {
     Route::post('/pca/edit/{id}', [App\Http\Controllers\PcaController::class, 'storeEditPca']);
     Route::put('/pca/update/{id}', [App\Http\Controllers\PcaController::class, 'updatePca']);
     Route::get('/pca/pdabydistricts/{id}', [App\Http\Controllers\PcaController::class, 'pdaBydistricts']);
+    Route::get('/pca/delete/{id}', [App\Http\Controllers\PcaController::class, 'deletePca']);
     /*------------------5.kader-----------------------------------------------*/
     Route::get('/kader', [App\Http\Controllers\KaderController::class, 'kaderIndex']);
     Route::get('/kader/create', [App\Http\Controllers\KaderController::class, 'createKader']);
@@ -112,7 +113,7 @@ Route::group(['middleware' => 'prevent-back-history'], function () {
     Route::post('/ranting/create', [App\Http\Controllers\RantingController::class, 'storeCreateRanting']);
     Route::get('/ranting/edit/{id}', [App\Http\Controllers\RantingController::class, 'editRanting']);
     Route::put('/ranting/update/{id}', [App\Http\Controllers\RantingController::class, 'updateRanting']);
-    Route::post('/ranting/delete/{id}', [App\Http\Controllers\RantingController::class, 'deleteRanting']);
+    Route::get('/ranting/delete/{id}', [App\Http\Controllers\RantingController::class, 'deleteRanting']);
     Route::get('/ranting/pcabyvillages/{id}', [App\Http\Controllers\PcaController::class, 'pcaByvillages']);
     Route::get('/ranting/pcabypdass/{id}', [App\Http\Controllers\PcaController::class, 'pcaBypdass']);
     /*------------------10.AUM-----------------------------------------------*/
@@ -121,8 +122,8 @@ Route::group(['middleware' => 'prevent-back-history'], function () {
     Route::post('/aum/create', [App\Http\Controllers\AumController::class, 'storeCreateAum']);
     Route::post('/aum/storeimage', [App\Http\Controllers\AumController::class, 'storeImage']);
     Route::get('/aum/edit/{id}', [App\Http\Controllers\Aumcontroller::class, 'editAum']);
-    Route::post('/aum/edit/{id}', [App\Http\Controllers\AumController::class, 'storeEditAum']);
-    Route::post('/aum/delete/{id}', [App\Http\Controllers\AumController::class, 'deleteAum']);
+    Route::post('/aum/update/{id}', [App\Http\Controllers\AumController::class, 'updateAum']);
+    Route::get('/aum/delete/{id}', [App\Http\Controllers\AumController::class, 'deleteAum']);
     Route::get('/aum/aumbyranting', [App\Http\Controllers\AumController::class, 'aumByRanting']);
     Route::get('/aum/detail/{id}', [App\Http\Controllers\AumController::class, 'aumDetail']);
     Route::get('/aum/aumbypca', [App\Http\Controllers\AumController::class, 'aumByPca']);
@@ -130,20 +131,22 @@ Route::group(['middleware' => 'prevent-back-history'], function () {
     Route::get('/pcas/pcasbyrantings/{id}', [App\Http\Controllers\AumController::class, 'pcasByrantings']);
     Route::get('/pdas/pdasbyrantings/{id}', [App\Http\Controllers\AumController::class, 'pdasByrantings']);
     Route::get('/pdas/pdasbypcass/{id}', [App\Http\Controllers\AumController::class, 'pdasBypcass']);
+    Route::post('/aum/image/delete', [App\Http\Controllers\AumController::class, 'deleteImage'])->name('aum.image.delete');
+
     /*------------------11.News-----------------------------------------------*/
     Route::get('/newscategory', [App\Http\Controllers\NewsCategoryController::class, 'categoryIndex']);
     Route::get('/newscategory/create', [App\Http\Controllers\NewsCategoryController::class, 'createCategory']);
     Route::post('/newscategory/create', [App\Http\Controllers\NewsCategoryController::class, 'storeCreateCategory']);
     Route::get('/newscategory/edit/{id}', [App\Http\Controllers\NewsCategoryController::class, 'editCategory']);
     Route::post('/newscategory/edit/{id}', [App\Http\Controllers\NewsCategoryController::class, 'storeEditCategory']);
-    Route::post('/newscategory/delete/{id}', [App\Http\Controllers\NewsCategoryController::class, 'deleteCategory']);
+    Route::get('/newscategory/delete/{id}', [App\Http\Controllers\NewsCategoryController::class, 'deleteCategory']);
 
     Route::get('/post', [App\Http\Controllers\NewsController::class, 'postIndex']);
     Route::get('/post/add', [App\Http\Controllers\NewsController::class, 'createPosty']);
     Route::post('/post/create', [App\Http\Controllers\NewsController::class, 'storeCreatePost']);
     Route::get('/post/edit/{id}', [App\Http\Controllers\NewsController::class, 'editPost']);
     Route::post('/post/edit/{id}', [App\Http\Controllers\NewsController::class, 'storeEditPost']);
-    Route::post('/post/delete/{id}', [App\Http\Controllers\NewsController::class, 'deletePost']);
+    Route::get('/post/delete/{id}', [App\Http\Controllers\NewsController::class, 'deletePost']);
     Route::get('validasiPost/{id}', [App\Http\Controllers\NewsController::class, 'validasiPost']);
     Route::get('downPost/{id}', [App\Http\Controllers\NewsController::class, 'downPost']);
     Route::get('post/preview/{id}', [App\Http\Controllers\NewsController::class, 'previewPost']);
