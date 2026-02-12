@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\File;
 class DocumentController extends Controller
 {
     // GET /document
-    public function index()
+    public function documentIndex()
     {
         $documentindex = DB::table('document as d')
             ->leftJoin('filetype as ft', 'ft.id_filetype', '=', 'd.id_filetype')
