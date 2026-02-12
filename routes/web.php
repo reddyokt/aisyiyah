@@ -1,187 +1,258 @@
 <?php
 
-use App\Http\Controllers\PDAController;
-use App\Http\Controllers\PCAController;
-use App\Http\Controllers\RoleController;
-use App\Models\Role;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\{
+    LandingPageController,
+    HomeController,
+    AuthenticationController,
+    DashboardController,
+    RoleController,
+    AccountController,
+    PdaController,
+    PcaController,
+    KaderController,
+    MajelisController,
+    FiletypeController,
+    BidangUsahaController,
+    DocumentController,
+    SuratController,
+    RantingController,
+    AumController,
+    NewsCategoryController,
+    NewsController,
+    ProgramKerjaController
+};
 
-Auth::routes();
+//
+// PUBLIC ROUTES
+//
+Route::get('/', [LandingPageController::class, 'index'])->name('landing');
+Route::get('/read/post/{news_id}', [LandingPageController::class, 'postBlog'])->name('post.read');
 
-// Route::get('/', [App\Http\Controllers\HomeController::class, 'root']);
-// Route::get('{any}', [App\Http\Controllers\HomeController::class, 'index']);
-// //Language Translation
+Route::get('index/{locale}', [HomeController::class, 'lang'])->name('lang.set');
+Route::post('/formsubmit', [HomeController::class, 'FormSubmit'])->name('form.submit');
 
-Route::get('index/{locale}', [App\Http\Controllers\HomeController::class, 'lang']);
-Route::post('/formsubmit', [App\Http\Controllers\HomeController::class, 'FormSubmit'])->name('FormSubmit');
+//
+// AUTH ROUTES (login/logout)
+//
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthenticationController::class, 'index'])->name('login');
+    Route::post('/postlogin', [AuthenticationController::class, 'postLogin'])->name('authentication.login.post');
+    Route::get('/verified/{token}', [AuthenticationController::class, 'verifiedAccount'])->name('authentication.verifiedAccount');
+});
 
-Route::post('/postlogin', [App\Http\Controllers\AuthenticationController::class, 'postLogin'])->name('authentication.login.post');
-// Route::post('/logout', [App\Http\Controllers\AuthenticationController::class, 'logout']);
+Route::post('/logout', [AuthenticationController::class, 'logout'])
+    ->middleware('auth')
+    ->name('logout');
 
-Route::get('/', [App\Http\Controllers\LandingPageController::class, 'index']);
-// Route::get('/landingpage/post', [App\Http\Controllers\LandingPageController::class, 'postLanding']);
-Route::get('/read/post/{news_id}', [App\Http\Controllers\LandingPageController::class, 'postBlog']);
+//
+// PROTECTED ROUTES (WAJIB LOGIN)
+//
+Route::middleware(['auth', 'prevent-back-history'])->group(function () {
 
-
-Route::group(['middleware' => 'prevent-back-history'], function () {
-// Route::group(['middleware'], function () {
-
-    Route::get('login', [App\Http\Controllers\AuthenticationController::class, 'index'])->name('login');
-
-    /* Dashboard */
-    Route::group(['middleware' => ['auth:web']], function () {
-        Route::get('dashboard', function () {
-            return redirect('dashboard/index');
-        });
-        Route::get('dashboard/index', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard.index');
-        Route::get('dashboard/setrole/{id}', [App\Http\Controllers\DashboardController::class, 'setrole'])->name('dashboard.setrole');
-        Route::get('set-language/{lang}', [App\Http\Controllers\DashboardController::class, 'setlanguage'])->name('dashboard.setlanguage');
+    // Dashboard
+    Route::prefix('dashboard')->name('dashboard.')->group(function () {
+        Route::get('/', fn() => redirect()->route('dashboard.index'));
+        Route::get('/index', [DashboardController::class, 'index'])->name('index');
+        Route::get('/setrole/{id}', [DashboardController::class, 'setrole'])->name('setrole');
+        Route::get('/set-language/{lang}', [DashboardController::class, 'setlanguage'])->name('setlanguage');
     });
 
+    // MASTER DATA - Role
+    Route::prefix('role')->name('role.')->group(function () {
+        Route::get('/', [RoleController::class, 'roleIndex'])->name('index');
+        Route::get('/create', [RoleController::class, 'addRole'])->name('create');
+        Route::post('/', [RoleController::class, 'storeNewRole'])->name('store');
+        Route::get('/{id}/edit', [RoleController::class, 'roleEdit'])->name('edit');
+        Route::put('/{id}', [RoleController::class, 'storeRoleEdit'])->name('update');
+    });
 
-    /*----------------------------------Master Data-----------------------------------------------------------*/
-    /*---------------1.role--------------------------------------*/
-    Route::get('/role', [App\Http\Controllers\RoleController::class, 'roleIndex']);
-    Route::get('/role/add', [App\Http\Controllers\RoleController::class, 'addRole']);
-    Route::post('/role/add', [App\Http\Controllers\RoleController::class, 'storeNewRole']);
-    Route::get('/role/edit/{id}', [App\Http\Controllers\RoleController::class, 'roleEdit']);
-    Route::post('/role/edit/{id}', [App\Http\Controllers\RoleController::class, 'storeRoleEdit']);
-    /*---------------2.account--------------------------------------*/
-    Route::get('/account', [App\Http\Controllers\AccountController::class, 'accountIndex']);
-    Route::get('/account/create', [App\Http\Controllers\AccountController::class, 'createAccount']);
-    Route::post('/account/create', [App\Http\Controllers\AccountController::class, 'storeAccount']);
-    Route::get('/account/edit/{id}', [App\Http\Controllers\AccountController::class, 'editAccount']);
-    Route::post('/account/edit/{id}', [App\Http\Controllers\AccountController::class, 'updateAccount']);
-    Route::get('/account/delete/{id}', [App\Http\Controllers\AccountController::class, 'deleteAccount']);
-    Route::get('/account/pda', [App\Http\Controllers\AccountController::class, 'getPDA']);
-    Route::get('/account/majelis', [App\Http\Controllers\AccountController::class, 'getMajelis']);
-    Route::post('/changepassword', [App\Http\Controllers\AccountController::class, 'changePassword']);
-    Route::get('verified/{token}', [App\Http\Controllers\AuthenticationController::class, 'verifiedAccount'])->name('authentication.verifiedAccount');
+    // Account
+    Route::prefix('account')->name('account.')->group(function () {
+        Route::get('/', [AccountController::class, 'accountIndex'])->name('index');
+        Route::get('/create', [AccountController::class, 'createAccount'])->name('create');
+        Route::post('/', [AccountController::class, 'storeAccount'])->name('store');
+        Route::get('/{id}/edit', [AccountController::class, 'editAccount'])->name('edit');
+        Route::put('/{id}', [AccountController::class, 'updateAccount'])->name('update');
+        Route::delete('/{id}', [AccountController::class, 'deleteAccount'])->name('destroy');
 
-    /*--------------------3.pda------------------------------------------------*/
-    Route::get('/pda', [App\Http\Controllers\PdaController::class, 'pdaIndex'])->name('pdaIndex');
-    Route::get('/pda/create', [App\Http\Controllers\PdaController::class, 'createPda']);
-    Route::post('/pda/create', [App\Http\Controllers\PdaController::class, 'storeCreatePda']);
-    Route::get('/pda/edit/{id}', [App\Http\Controllers\PdaController::class, 'editPda']);
-    Route::put('/pda/update/{id}', [App\Http\Controllers\PdaController::class, 'updatePda']);
-    Route::post('/pda/delete/{id}', [App\Http\Controllers\PdaController::class, 'deletePda']);
-    /*--------------------4.pca------------------------------------------------*/
-    Route::get('/pca', [App\Http\Controllers\PcaController::class, 'pcaIndex']);
-    Route::get('/pca/create', [App\Http\Controllers\PcaController::class, 'createPca']);
-    Route::post('/pca/create', [App\Http\Controllers\PcaController::class, 'storeCreatePca']);
-    Route::get('/pca/edit/{id}', [App\Http\Controllers\PcaController::class, 'editPca']);
-    Route::post('/pca/edit/{id}', [App\Http\Controllers\PcaController::class, 'storeEditPca']);
-    Route::put('/pca/update/{id}', [App\Http\Controllers\PcaController::class, 'updatePca']);
-    Route::get('/pca/pdabydistricts/{id}', [App\Http\Controllers\PcaController::class, 'pdaBydistricts']);
-    Route::get('/pca/delete/{id}', [App\Http\Controllers\PcaController::class, 'deletePca']);
-    /*------------------5.kader-----------------------------------------------*/
-    Route::get('/kader', [App\Http\Controllers\KaderController::class, 'kaderIndex']);
-    Route::get('/kader/create', [App\Http\Controllers\KaderController::class, 'createKader']);
-    Route::post('/kader/create', [App\Http\Controllers\KaderController::class, 'storeKader']);
-    Route::get('/kader/pcabypda/{id}', [App\Http\Controllers\KaderController::class, 'pcaByPda']);
-    Route::get('/kader/detail/{id}', [App\Http\Controllers\KaderController::class, 'kaderDetail']);
-    Route::get('/kader/print/{id}', [App\Http\Controllers\KaderController::class, 'kaderPrint']);
-    /*------------------6.majelis-----------------------------------------------*/
-    Route::get('/majelis', [App\Http\Controllers\MajelisController::class, 'majelisIndex']);
-    Route::get('/majelis/create', [App\Http\Controllers\MajelisController::class, 'createMajelis']);
-    Route::post('/majelis/create', [App\Http\Controllers\MajelisController::class, 'storeCreateMajelis']);
-    /*------------------7.filetype-----------------------------------------------*/
-    Route::get('/filetype', [App\Http\Controllers\FiletypeController::class, 'filetypeIndex']);
-    Route::get('/filetype/create', [App\Http\Controllers\FiletypeController::class, 'createFiletype']);
-    Route::post('/filetype/create', [App\Http\Controllers\FiletypeController::class, 'storeCreateFiletype']);
-    /*------------------7.bidang_usaha-----------------------------------------------*/
-    Route::get('/bidangusaha', [App\Http\Controllers\BidangUsahaController::class, 'bidangusahaIndex']);
-    Route::get('/bidangusaha/create', [App\Http\Controllers\BidangUsahaController::class, 'createBidangusaha']);
-    Route::post('/bidangusaha/create', [App\Http\Controllers\BidangUsahaController::class, 'storeCreateBidangusaha']);
-    /*------------------8.Document-----------------------------------------------*/
-    Route::get('/document', [App\Http\Controllers\DocumentController::class, 'documentIndex']);
-    Route::get('/document/create', [App\Http\Controllers\DocumentController::class, 'createDocument']);
-    Route::post('/document/create', [App\Http\Controllers\DocumentController::class, 'storeCreateDocument']);
-    /*------------------8.Surat-----------------------------------------------*/
-    Route::get('/inbox/{id}', [App\Http\Controllers\SuratController::class, 'inbox']);
-    Route::get('/sent/{id}', [App\Http\Controllers\SuratController::class, 'sent']);
-    Route::get('/surat/create', [App\Http\Controllers\SuratController::class, 'createSurat']);
-    Route::post('/surat/create', [App\Http\Controllers\SuratController::class, 'storeCreateSurat']);
-    Route::get('/inbox/read/{id}', [App\Http\Controllers\SuratController::class, 'readInbox']);
-    Route::get('/sent/read/{id}', [App\Http\Controllers\SuratController::class, 'readSend']);
-    Route::get('/inbox/read/{id}', [App\Http\Controllers\SuratController::class, 'readSurat']);
+        Route::get('/pda', [AccountController::class, 'getPDA'])->name('pda');
+        Route::get('/majelis', [AccountController::class, 'getMajelis'])->name('majelis');
+        Route::post('/changepassword', [AccountController::class, 'changePassword'])->name('changePassword');
+    });
 
-    /*------------------9.ranting-----------------------------------------------*/
-    Route::get('/ranting', [App\Http\Controllers\RantingController::class, 'rantingIndex']);
-    Route::get('/ranting/create', [App\Http\Controllers\RantingController::class, 'createRanting']);
-    Route::post('/ranting/create', [App\Http\Controllers\RantingController::class, 'storeCreateRanting']);
-    Route::get('/ranting/edit/{id}', [App\Http\Controllers\RantingController::class, 'editRanting']);
-    Route::put('/ranting/update/{id}', [App\Http\Controllers\RantingController::class, 'updateRanting']);
-    Route::get('/ranting/delete/{id}', [App\Http\Controllers\RantingController::class, 'deleteRanting']);
-    Route::get('/ranting/pcabyvillages/{id}', [App\Http\Controllers\PcaController::class, 'pcaByvillages']);
-    Route::get('/ranting/pcabypdass/{id}', [App\Http\Controllers\PcaController::class, 'pcaBypdass']);
-    /*------------------10.AUM-----------------------------------------------*/
-    Route::get('/aum', [App\Http\Controllers\AumController::class, 'aumIndex']);
-    Route::get('/aum/create', [App\Http\Controllers\AumController::class, 'createAum']);
-    Route::post('/aum/create', [App\Http\Controllers\AumController::class, 'storeCreateAum']);
-    Route::post('/aum/storeimage', [App\Http\Controllers\AumController::class, 'storeImage']);
-    Route::get('/aum/edit/{id}', [App\Http\Controllers\Aumcontroller::class, 'editAum']);
-    Route::post('/aum/update/{id}', [App\Http\Controllers\AumController::class, 'updateAum']);
-    Route::get('/aum/delete/{id}', [App\Http\Controllers\AumController::class, 'deleteAum']);
-    Route::get('/aum/aumbyranting', [App\Http\Controllers\AumController::class, 'aumByRanting']);
-    Route::get('/aum/detail/{id}', [App\Http\Controllers\AumController::class, 'aumDetail']);
-    Route::get('/aum/aumbypca', [App\Http\Controllers\AumController::class, 'aumByPca']);
-    Route::get('/aum/aumbypda', [App\Http\Controllers\AumController::class, 'aumByPda']);
-    Route::get('/pcas/pcasbyrantings/{id}', [App\Http\Controllers\AumController::class, 'pcasByrantings']);
-    Route::get('/pdas/pdasbyrantings/{id}', [App\Http\Controllers\AumController::class, 'pdasByrantings']);
-    Route::get('/pdas/pdasbypcass/{id}', [App\Http\Controllers\AumController::class, 'pdasBypcass']);
-    Route::post('/aum/image/delete', [App\Http\Controllers\AumController::class, 'deleteImage'])->name('aum.image.delete');
+    // PDA
+    Route::prefix('pda')->name('pda.')->group(function () {
+        Route::get('/', [PdaController::class, 'pdaIndex'])->name('index');
+        Route::get('/create', [PdaController::class, 'createPda'])->name('create');
+        Route::post('/', [PdaController::class, 'storeCreatePda'])->name('store');
+        Route::get('/{id}/edit', [PdaController::class, 'editPda'])->name('edit');
+        Route::put('/{id}', [PdaController::class, 'updatePda'])->name('update');
+        Route::delete('/{id}', [PdaController::class, 'deletePda'])->name('destroy');
+    });
 
-    /*------------------11.News-----------------------------------------------*/
-    Route::get('/newscategory', [App\Http\Controllers\NewsCategoryController::class, 'categoryIndex']);
-    Route::get('/newscategory/create', [App\Http\Controllers\NewsCategoryController::class, 'createCategory']);
-    Route::post('/newscategory/create', [App\Http\Controllers\NewsCategoryController::class, 'storeCreateCategory']);
-    Route::get('/newscategory/edit/{id}', [App\Http\Controllers\NewsCategoryController::class, 'editCategory']);
-    Route::post('/newscategory/edit/{id}', [App\Http\Controllers\NewsCategoryController::class, 'storeEditCategory']);
-    Route::get('/newscategory/delete/{id}', [App\Http\Controllers\NewsCategoryController::class, 'deleteCategory']);
+    // PCA
+    Route::prefix('pca')->name('pca.')->group(function () {
+        Route::get('/', [PcaController::class, 'pcaIndex'])->name('index');
+        Route::get('/create', [PcaController::class, 'createPca'])->name('create');
+        Route::post('/', [PcaController::class, 'storeCreatePca'])->name('store');
+        Route::get('/{id}/edit', [PcaController::class, 'editPca'])->name('edit');
+        Route::put('/{id}', [PcaController::class, 'updatePca'])->name('update');
+        Route::delete('/{id}', [PcaController::class, 'deletePca'])->name('destroy');
 
-    Route::get('/post', [App\Http\Controllers\NewsController::class, 'postIndex']);
-    Route::get('/post/add', [App\Http\Controllers\NewsController::class, 'createPosty']);
-    Route::post('/post/create', [App\Http\Controllers\NewsController::class, 'storeCreatePost']);
-    Route::get('/post/edit/{id}', [App\Http\Controllers\NewsController::class, 'editPost']);
-    Route::post('/post/edit/{id}', [App\Http\Controllers\NewsController::class, 'storeEditPost']);
-    Route::get('/post/delete/{id}', [App\Http\Controllers\NewsController::class, 'deletePost']);
-    Route::get('validasiPost/{id}', [App\Http\Controllers\NewsController::class, 'validasiPost']);
-    Route::get('downPost/{id}', [App\Http\Controllers\NewsController::class, 'downPost']);
-    Route::get('post/preview/{id}', [App\Http\Controllers\NewsController::class, 'previewPost']);
+        Route::get('/pdabydistricts/{id}', [PcaController::class, 'pdaBydistricts'])->name('pdabydistricts');
+    });
 
-     /*------------------12.Proker-----------------------------------------------*/
-     Route::get('/periode', [App\Http\Controllers\ProgramKerjaController::class, 'periodeIndex']);
-     Route::get('/periode/create', [App\Http\Controllers\ProgramKerjaController::class, 'createPeriode']);
-     Route::post('/periode/create', [App\Http\Controllers\ProgramKerjaController::class, 'storeCreatePeriode']);
-     Route::get('/periode/edit/{id}', [App\Http\Controllers\ProgramKerjaController::class, 'editPeriode']);
-     Route::post('/periode/edit/{id}', [App\Http\Controllers\ProgramKerjaController::class, 'storeEditPeriode']);
+    // Kader
+    Route::prefix('kader')->name('kader.')->group(function () {
+        Route::get('/', [KaderController::class, 'kaderIndex'])->name('index');
+        Route::get('/create', [KaderController::class, 'createKader'])->name('create');
+        Route::post('/', [KaderController::class, 'storeKader'])->name('store');
 
-     Route::get('/proker', [App\Http\Controllers\ProgramKerjaController::class, 'prokerIndex']);
-     Route::get('/proker/create', [App\Http\Controllers\ProgramKerjaController::class, 'createProker']);
-     Route::post('/proker/create', [App\Http\Controllers\ProgramKerjaController::class, 'storeCreateProker']);
-     Route::get('/proker/detail/{id}', [App\Http\Controllers\ProgramKerjaController::class, 'prokerDetail']);
-     Route::get('/proker/edit/{id}', [App\Http\Controllers\ProgramKerjaController::class, 'editProker']);
-     Route::get('/proker/edit/{id}', [App\Http\Controllers\ProgramKerjaController::class, 'editProker']);
-     Route::get('/proker/validasimda/{id}', [App\Http\Controllers\ProgramKerjaController::class, 'validasiMda']);
-     Route::get('/proker/validasipda/{id}', [App\Http\Controllers\ProgramKerjaController::class, 'validasiPda']);
-     Route::get('/proker/update/{id}', [App\Http\Controllers\ProgramKerjaController::class, 'updateProker']);
-     Route::post('/proker/update/{id}', [App\Http\Controllers\ProgramKerjaController::class, 'storeUpdate']);
-     Route::get('/proker/unrealized/{id}', [App\Http\Controllers\ProgramKerjaController::class, 'unrealized']);
-     Route::get('/proker/realized/{id}', [App\Http\Controllers\ProgramKerjaController::class, 'realized']);
+        Route::get('/pcabypda/{id}', [KaderController::class, 'pcaByPda'])->name('pcabypda');
+        Route::get('/detail/{id}', [KaderController::class, 'kaderDetail'])->name('detail');
+        Route::get('/print/{id}', [KaderController::class, 'kaderPrint'])->name('print');
+    });
 
+    // Majelis
+    Route::prefix('majelis')->name('majelis.')->group(function () {
+        Route::get('/', [MajelisController::class, 'majelisIndex'])->name('index');
+        Route::get('/create', [MajelisController::class, 'createMajelis'])->name('create');
+        Route::post('/', [MajelisController::class, 'storeCreateMajelis'])->name('store');
+    });
 
-     /*------------------13.Landing Property-----------------------------------------------*/
-     Route::get('/landingproperty', [App\Http\Controllers\LandingPageController::class, 'landingProperty']);
-     Route::post('/landingprop/update', [App\Http\Controllers\LandingPageController::class, 'updateProperty']);
+    // Filetype
+    Route::prefix('filetype')->name('filetype.')->group(function () {
+        Route::get('/', [FiletypeController::class, 'filetypeIndex'])->name('index');
+        Route::get('/create', [FiletypeController::class, 'createFiletype'])->name('create');
+        Route::post('/', [FiletypeController::class, 'storeCreateFiletype'])->name('store');
+    });
 
-     /*------------------14.Data PWA-----------------------------------------------*/
-     Route::get('/dataPWA', [App\Http\Controllers\LandingPageController::class, 'dataPwaNew']);
-     Route::get('/dataPWANew', [App\Http\Controllers\LandingPageController::class, 'dataPwaNew']);
-     Route::get('/detail/pda/{id}', [App\Http\Controllers\LandingPageController::class, 'dataDetailPda']);
+    // Bidang Usaha
+    Route::prefix('bidangusaha')->name('bidangusaha.')->group(function () {
+        Route::get('/', [BidangUsahaController::class, 'bidangusahaIndex'])->name('index');
+        Route::get('/create', [BidangUsahaController::class, 'createBidangusaha'])->name('create');
+        Route::post('/', [BidangUsahaController::class, 'storeCreateBidangusaha'])->name('store');
+    });
 
+    // Document (INI YANG KAMU MAU KUNCI)
+    Route::prefix('document')->name('document.')->group(function () {
+        Route::get('/', [DocumentController::class, 'documentIndex'])->name('index');
+        Route::get('/create', [DocumentController::class, 'createDocument'])->name('create');
+        Route::post('/', [DocumentController::class, 'storeCreateDocument'])->name('store');
+    });
 
-     
+    // Surat
+    Route::prefix('surat')->name('surat.')->group(function () {
+        Route::get('/create', [SuratController::class, 'createSurat'])->name('create');
+        Route::post('/', [SuratController::class, 'storeCreateSurat'])->name('store');
 
+        Route::get('/inbox/{id}', [SuratController::class, 'inbox'])->name('inbox');
+        Route::get('/sent/{id}', [SuratController::class, 'sent'])->name('sent');
+
+        Route::get('/inbox/read/{id}', [SuratController::class, 'readInbox'])->name('inbox.read');
+        Route::get('/sent/read/{id}', [SuratController::class, 'readSend'])->name('sent.read');
+    });
+
+    // Ranting
+    Route::prefix('ranting')->name('ranting.')->group(function () {
+        Route::get('/', [RantingController::class, 'rantingIndex'])->name('index');
+        Route::get('/create', [RantingController::class, 'createRanting'])->name('create');
+        Route::post('/', [RantingController::class, 'storeCreateRanting'])->name('store');
+        Route::get('/{id}/edit', [RantingController::class, 'editRanting'])->name('edit');
+        Route::put('/{id}', [RantingController::class, 'updateRanting'])->name('update');
+        Route::delete('/{id}', [RantingController::class, 'deleteRanting'])->name('destroy');
+
+        Route::get('/pcabyvillages/{id}', [PcaController::class, 'pcaByvillages'])->name('pcabyvillages');
+        Route::get('/pcabypdass/{id}', [PcaController::class, 'pcaBypdass'])->name('pcabypdass');
+    });
+
+    // AUM
+    Route::prefix('aum')->name('aum.')->group(function () {
+        Route::get('/', [AumController::class, 'aumIndex'])->name('index');
+        Route::get('/create', [AumController::class, 'createAum'])->name('create');
+        Route::post('/', [AumController::class, 'storeCreateAum'])->name('store');
+
+        Route::post('/storeimage', [AumController::class, 'storeImage'])->name('storeimage');
+
+        Route::get('/{id}/edit', [AumController::class, 'editAum'])->name('edit');
+        Route::put('/{id}', [AumController::class, 'updateAum'])->name('update');
+        Route::delete('/{id}', [AumController::class, 'deleteAum'])->name('destroy');
+
+        Route::get('/aumbyranting', [AumController::class, 'aumByRanting'])->name('aumbyranting');
+        Route::get('/detail/{id}', [AumController::class, 'aumDetail'])->name('detail');
+        Route::get('/aumbypca', [AumController::class, 'aumByPca'])->name('aumbypca');
+        Route::get('/aumbypda', [AumController::class, 'aumByPda'])->name('aumbypda');
+
+        Route::get('/pcas/pcasbyrantings/{id}', [AumController::class, 'pcasByrantings'])->name('pcasbyrantings');
+        Route::get('/pdas/pdasbyrantings/{id}', [AumController::class, 'pdasByrantings'])->name('pdasbyrantings');
+        Route::get('/pdas/pdasbypcass/{id}', [AumController::class, 'pdasBypcass'])->name('pdasbypcass');
+
+        Route::delete('/image', [AumController::class, 'deleteImage'])->name('image.delete');
+    });
+
+    // News Category
+    Route::prefix('newscategory')->name('newscategory.')->group(function () {
+        Route::get('/', [NewsCategoryController::class, 'categoryIndex'])->name('index');
+        Route::get('/create', [NewsCategoryController::class, 'createCategory'])->name('create');
+        Route::post('/', [NewsCategoryController::class, 'storeCreateCategory'])->name('store');
+        Route::get('/{id}/edit', [NewsCategoryController::class, 'editCategory'])->name('edit');
+        Route::put('/{id}', [NewsCategoryController::class, 'storeEditCategory'])->name('update');
+        Route::delete('/{id}', [NewsCategoryController::class, 'deleteCategory'])->name('destroy');
+    });
+
+    // News Posts
+    Route::prefix('post')->name('post.')->group(function () {
+        Route::get('/', [NewsController::class, 'postIndex'])->name('index');
+        Route::get('/create', [NewsController::class, 'createPosty'])->name('create');
+        Route::post('/', [NewsController::class, 'storeCreatePost'])->name('store');
+
+        Route::get('/{id}/edit', [NewsController::class, 'editPost'])->name('edit');
+        Route::put('/{id}', [NewsController::class, 'storeEditPost'])->name('update');
+
+        Route::delete('/{id}', [NewsController::class, 'deletePost'])->name('destroy');
+
+        Route::get('/validasi/{id}', [NewsController::class, 'validasiPost'])->name('validasi');
+        Route::get('/down/{id}', [NewsController::class, 'downPost'])->name('down');
+        Route::get('/preview/{id}', [NewsController::class, 'previewPost'])->name('preview');
+    });
+
+    // Proker
+    Route::prefix('periode')->name('periode.')->group(function () {
+        Route::get('/', [ProgramKerjaController::class, 'periodeIndex'])->name('index');
+        Route::get('/create', [ProgramKerjaController::class, 'createPeriode'])->name('create');
+        Route::post('/', [ProgramKerjaController::class, 'storeCreatePeriode'])->name('store');
+        Route::get('/{id}/edit', [ProgramKerjaController::class, 'editPeriode'])->name('edit');
+        Route::put('/{id}', [ProgramKerjaController::class, 'storeEditPeriode'])->name('update');
+    });
+
+    Route::prefix('proker')->name('proker.')->group(function () {
+        Route::get('/', [ProgramKerjaController::class, 'prokerIndex'])->name('index');
+        Route::get('/create', [ProgramKerjaController::class, 'createProker'])->name('create');
+        Route::post('/', [ProgramKerjaController::class, 'storeCreateProker'])->name('store');
+
+        Route::get('/detail/{id}', [ProgramKerjaController::class, 'prokerDetail'])->name('detail');
+        Route::get('/{id}/edit', [ProgramKerjaController::class, 'editProker'])->name('edit');
+
+        Route::get('/validasimda/{id}', [ProgramKerjaController::class, 'validasiMda'])->name('validasimda');
+        Route::get('/validasipda/{id}', [ProgramKerjaController::class, 'validasiPda'])->name('validasipda');
+
+        Route::get('/{id}/editdata', [ProgramKerjaController::class, 'updateProker'])->name('editdata');
+        Route::put('/{id}', [ProgramKerjaController::class, 'storeUpdate'])->name('update');
+
+        Route::get('/unrealized/{id}', [ProgramKerjaController::class, 'unrealized'])->name('unrealized');
+        Route::get('/realized/{id}', [ProgramKerjaController::class, 'realized'])->name('realized');
+    });
+
+    // Landing property admin
+    Route::prefix('landingproperty')->name('landingproperty.')->group(function () {
+        Route::get('/', [LandingPageController::class, 'landingProperty'])->name('index');
+        Route::post('/update', [LandingPageController::class, 'updateProperty'])->name('update');
+    });
+
+    // Data PWA
+    Route::prefix('dataPWA')->name('pwa.')->group(function () {
+        Route::get('/', [LandingPageController::class, 'dataPwaNew'])->name('index');
+        Route::get('/detail/pda/{id}', [LandingPageController::class, 'dataDetailPda'])->name('detail.pda');
+    });
 });
