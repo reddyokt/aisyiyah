@@ -96,13 +96,36 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
 
     // PDA
     Route::prefix('pda')->name('pda.')->group(function () {
+
+        // index
         Route::get('/', [PdaController::class, 'pdaIndex'])->name('index');
+
+        // create form
         Route::get('/create', [PdaController::class, 'createPda'])->name('create');
+
+        // ✅ store (recommended REST)
         Route::post('/', [PdaController::class, 'storeCreatePda'])->name('store');
+
+        // ✅ legacy: kalau blade lama action="/pda/create"
+        Route::post('/create', [PdaController::class, 'storeCreatePda'])->name('store.legacy');
+
+        // edit form (dua versi: REST + legacy kalau dulu /pda/edit/{id})
         Route::get('/{id}/edit', [PdaController::class, 'editPda'])->name('edit');
+        Route::get('/edit/{id}', [PdaController::class, 'editPda'])->name('edit.legacy');
+
+        // update (recommended REST)
         Route::put('/{id}', [PdaController::class, 'updatePda'])->name('update');
+
+        // ✅ legacy: kalau dulu pakai /pda/update/{id}
+        Route::put('/update/{id}', [PdaController::class, 'updatePda'])->name('update.legacy');
+
+        // delete (recommended)
         Route::delete('/{id}', [PdaController::class, 'deletePda'])->name('destroy');
+
+        // ✅ legacy: kalau masih ada link GET /pda/delete/{id}
+        Route::get('/delete/{id}', [PdaController::class, 'deletePda'])->name('destroy.legacy');
     });
+
 
     // PCA
     Route::prefix('pca')->name('pca.')->group(function () {
