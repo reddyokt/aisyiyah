@@ -158,17 +158,15 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
     });
 
     Route::prefix('document')->name('document.')->group(function () {
-        Route::get('/', [DocumentController::class, 'documentIndex'])->name('index');
+        Route::get('/', [DocumentController::class, 'index'])->name('index');
+        Route::get('/create', [DocumentController::class, 'create'])->name('create');
+        Route::post('/create', [DocumentController::class, 'store'])->name('store');
 
-        // create (sesuai blade kamu: action="/document/create")
-        Route::get('/create', [DocumentController::class, 'createDocument'])->name('create');
-        Route::post('/create', [DocumentController::class, 'storeCreateDocument'])->name('store');
+        Route::get('/{id}/edit', [DocumentController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [DocumentController::class, 'update'])->name('update'); 
 
-        // delete soft (REST)
-        Route::delete('/{id}', [DocumentController::class, 'destroy'])->name('destroy');
-
-        // OPTIONAL: kompatibel URL lama kalau kamu punya tombol GET /document/delete/{id}
-        Route::get('/delete/{id}', [DocumentController::class, 'destroyViaGet'])->name('delete.get');
+        Route::delete('/{id}', [DocumentController::class, 'destroy'])->name('destroy');  // soft delete
+        Route::get('/delete/{id}', [DocumentController::class, 'destroyViaGet'])->name('delete.legacy'); // optional
     });
 
     // Surat

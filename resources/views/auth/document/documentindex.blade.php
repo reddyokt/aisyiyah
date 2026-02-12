@@ -4,8 +4,8 @@
 @endsection
 
 @section('css')
-    <!-- DataTables -->
-    <link href="{{ URL::asset('/assets/libs/datatables/datatables.min.css') }}" rel="stylesheet" type="text/css" />
+    <!-- DataTables (sesuai format baku project) -->
+    <link href="{{ URL::asset('/build/css/plugins/dataTables.bootstrap5.min.css') }}" rel="stylesheet" type="text/css" />
 @endsection
 
 @section('content')
@@ -23,23 +23,17 @@
             <div class="card">
                 <div class="card-body">
                     @include('flashmessage')
+
                     <div class="row mb-2">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <a href="/document/create" class="btn btn-success waves-effect waves-light"><i
-                                        class="mdi mdi-plus me-2"></i> Add New</a>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="form-inline float-md-end mb-3">
-                                <div class="search-box ms-2">
-                                </div>
-
+                                <a href="{{ route('document.create') }}" class="btn btn-success waves-effect waves-light">
+                                    <i class="mdi mdi-plus me-2"></i> Add New
+                                </a>
                             </div>
                         </div>
                     </div>
-                    <!-- end row -->
+
                     <div class="table-responsive mb-4">
                         <table id="datatable" class="table table-centered dt-responsive-wrap mb-0">
                             <thead>
@@ -55,35 +49,51 @@
                                 @foreach ($documentindex as $doc)
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
-                                        <td style="width: 30%">
-                                            @if ($doc->id_doc != 0)
-                                                {{ $doc->docname }} <span class="icon icon-lg"> <a
-                                                        href="{{ '/upload/document/' . $doc->uploaded_doc }}"
-                                                        target="_blank"><i class="uil-file-download-alt"></i></a></span>
-                                            @else
-                                            @endif
 
+                                        <td style="width: 30%">
+                                            {{ $doc->docname }}
+                                            @if (!empty($doc->uploaded_doc))
+                                                <span class="icon icon-lg">
+                                                    <a href="{{ asset('upload/document/' . $doc->uploaded_doc) }}"
+                                                        target="_blank">
+                                                        <i class="uil-file-download-alt"></i>
+                                                    </a>
+                                                </span>
+                                            @endif
                                         </td>
+
                                         <td style="width: 30%">{{ $doc->filename }}</td>
+
                                         <td>
-                                            @if ($doc->pda_id == null)
+                                            @if (empty($doc->pda_id))
                                                 {{ $doc->name }}
                                             @else
                                                 {{ $doc->name }} - {{ $doc->pda_name }}
                                             @endif
                                         </td>
+
                                         <td>
                                             <ul class="list-inline mb-0">
+
+                                                {{-- Kalau belum ada fitur edit dokumen, mending hidden dulu --}}
+                                                {{-- <li class="list-inline-item">
+                                                    <a href="{{ route('document.edit', $doc->id_doc) }}" class="px-2 text-primary">
+                                                        <i class="uil uil-pen font-size-18"></i>
+                                                    </a>
+                                                </li> --}}
+
                                                 <li class="list-inline-item">
-                                                    <a href="/filetype/edit/{{ $doc->id_doc }}"
-                                                        class="px-2 text-primary"><i
-                                                            class="uil uil-pen font-size-18"></i></a>
+                                                    <form action="{{ route('document.destroy', $doc->id_doc) }}"
+                                                        method="POST" onsubmit="return confirm('Hapus dokumen ini?')"
+                                                        style="display:inline">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="btn btn-link px-2 text-danger p-0">
+                                                            <i class="uil uil-trash-alt font-size-18"></i>
+                                                        </button>
+                                                    </form>
                                                 </li>
-                                                <li class="list-inline-item">
-                                                    <a href="/filetype/delete/{{ $doc->id_doc }}"
-                                                        class="px-2 text-danger"><i
-                                                            class="uil uil-trash-alt font-size-18"></i></a>
-                                                </li>
+
                                             </ul>
                                         </td>
                                     </tr>
@@ -91,23 +101,22 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="row mt-4">
-                        <div class="col-sm-6">
-                            <div>
-                                {{-- <p class="mb-sm-0">Showing 1 to 10 of {{$filetypeindex->count()}} entries</p> --}}
-                            </div>
-                        </div>
-                    </div>
+
                 </div>
             </div>
         </div>
     </div>
-    <!-- end row -->
 @endsection
 
 @section('script')
-    <script src="{{ URL::asset('/assets/libs/datatables/datatables.min.js') }}"></script>
-    <script src="{{ URL::asset('/assets/libs/jszip/jszip.min.js') }}"></script>
-    <script src="{{ URL::asset('/assets/libs/pdfmake/pdfmake.min.js') }}"></script>
-    <script src="{{ URL::asset('/assets/js/pages/datatables.init.js') }}"></script>
+    {{-- Format baku DataTables project kamu --}}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{{ URL::asset('/build/js/plugins/dataTables.min.js') }}"></script>
+    <script src="{{ URL::asset('/build/js/plugins/dataTables.bootstrap5.min.js') }}"></script>
+
+    <script>
+        $(function() {
+            $('#datatable').DataTable();
+        });
+    </script>
 @endsection
