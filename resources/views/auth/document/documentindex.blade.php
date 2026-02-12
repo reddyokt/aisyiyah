@@ -5,7 +5,7 @@
 
 @section('css')
     <!-- DataTables (sesuai format baku project) -->
-    <link href="{{ URL::asset('/build/css/plugins/dataTables.bootstrap5.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ URL::asset('/assets/libs/datatables/datatables.min.css') }}" rel="stylesheet" type="text/css" />
 @endsection
 
 @section('content')
@@ -111,9 +111,10 @@
 
 @section('script')
     {{-- Format baku DataTables project kamu --}}
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="{{ URL::asset('/build/js/plugins/dataTables.min.js') }}"></script>
-    <script src="{{ URL::asset('/build/js/plugins/dataTables.bootstrap5.min.js') }}"></script>
+    <script src="{{ URL::asset('/assets/libs/datatables/datatables.min.js') }}"></script>
+    <script src="{{ URL::asset('/assets/libs/jszip/jszip.min.js') }}"></script>
+    <script src="{{ URL::asset('/assets/libs/pdfmake/pdfmake.min.js') }}"></script>
+    <script src="{{ URL::asset('/assets/js/pages/datatables.init.js') }}"></script>
 
     <script>
         $(function() {
