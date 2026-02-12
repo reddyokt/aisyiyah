@@ -7,11 +7,15 @@
         .container {
             max-width: 500px;
         }
-        dl, ol, ul {
+
+        dl,
+        ol,
+        ul {
             margin: 0;
             padding: 0;
             list-style: none;
         }
+
         .imgPreview img {
             padding: 8px;
             max-width: 200px;
@@ -45,8 +49,8 @@
                             <div class="col-lg-6">
                                 <label class="form-label col-form-label">Pengelolaan oleh</label>
                                 <div class="form-check form-check-inline">
-                                    <input required class="form-group form-check-input" type="radio" name="inlineRadioOptions"
-                                        id="pengelola1" value="Ranting">
+                                    <input required class="form-group form-check-input" type="radio"
+                                        name="inlineRadioOptions" id="pengelola1" value="Ranting">
                                     <label class="form-check-label" for="inlineRadio1">Ranting</label>
                                 </div>
                                 <div class="form-check form-check-inline">
@@ -152,6 +156,10 @@
                                 </div>
                             </div>
                         </div>
+
+                        <input type="hidden" name="pca" id="pca_hidden">
+                        <input type="hidden" name="pda" id="pda_hidden">
+
                         <div class="d-flex flex-wrap gap-3">
                             <button type="submit" class="btn btn-primary waves-effect waves-light"
                                 id="sa-add-success">Simpan </button>
@@ -185,6 +193,177 @@
             };
             $('#images').on('change', function() {
                 multiImgPreview(this, 'div.imgPreview');
+            });
+        });
+    </script>
+
+    <script>
+        $(function() {
+            $('.select2').select2();
+
+            const $divRanting = $('#divrantings');
+            const $divPcas = $('#divpcas'); // select pca manual
+            const $divPdas = $('#divpdas'); // select pda manual
+            const $divPcass = $('#divpcass'); // pca auto (disabled)
+            const $divPdass = $('#divpdass'); // pda auto (disabled)
+
+            const $rantings = $('#rantings');
+            const $pcas = $('#pcas');
+            const $pdas = $('#pdas');
+            const $pcass = $('#pcass');
+            const $pdass = $('#pdass');
+
+            const $pcaHidden = $('#pca_hidden');
+            const $pdaHidden = $('#pda_hidden');
+
+            function resetAll() {
+                $divRanting.hide();
+                $divPcas.hide();
+                $divPdas.hide();
+                $divPcass.hide();
+                $divPdass.hide();
+
+                $rantings.empty().trigger('change');
+                $pcas.empty().trigger('change');
+                $pdas.empty().trigger('change');
+                $pcass.empty().trigger('change');
+                $pdass.empty().trigger('change');
+
+                $pcaHidden.val('');
+                $pdaHidden.val('');
+            }
+
+            function setSelectOptions($select, items, valueKey, textKey, placeholder) {
+                $select.empty();
+                if (placeholder) {
+                    $select.append(new Option(placeholder, '', true, true));
+                }
+                items.forEach(it => {
+                    $select.append(new Option(it[textKey], it[valueKey], false, false));
+                });
+                $select.trigger('change');
+            }
+
+            async function fetchJson(url) {
+                const res = await fetch(url, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                if (!res.ok) throw new Error('Fetch failed: ' + url);
+                return await res.json();
+            }
+
+            // load master list
+            async function loadRantings() {
+                const data = await fetchJson('{{ route('aum.aumbyranting') }}');
+                // ranting: ranting_id, ranting_name
+                setSelectOptions($rantings, data, 'ranting_id', 'ranting_name', 'Pilih Ranting');
+            }
+
+            async function loadPcas() {
+                const data = await fetchJson('{{ route('aum.aumbypca') }}');
+                // pca: pca_id, pca_name
+                setSelectOptions($pcas, data, 'pca_id', 'pca_name', 'Pilih PCA');
+            }
+
+            async function loadPdas() {
+                const data = await fetchJson('{{ route('aum.aumbypda') }}');
+                // pda: pda_id, pda_name
+                setSelectOptions($pdas, data, 'pda_id', 'pda_name', 'Pilih PDA');
+            }
+
+            // cascade handlers
+            async function rantingSelected(rantingId) {
+                if (!rantingId) return;
+
+                // fetch PCA by ranting
+                const pcass = await fetchJson('{{ url('aum/pcas/pcasbyrantings') }}/' + rantingId);
+                // expect array (1 item)
+                setSelectOptions($pcass, pcass, 'pca_id', 'pca_name', null);
+                $divPcass.show();
+
+                const pcaId = pcass?.[0]?.pca_id ?? '';
+                $pcaHidden.val(pcaId);
+
+                // fetch PDA by ranting
+                const pdass = await fetchJson('{{ url('aum/pdas/pdasbyrantings') }}/' + rantingId);
+                setSelectOptions($pdass, pdass, 'pda_id', 'pda_name', null);
+                $divPdass.show();
+
+                const pdaId = pdass?.[0]?.pda_id ?? '';
+                $pdaHidden.val(pdaId);
+            }
+
+            async function pcaSelected(pcaId) {
+                if (!pcaId) return;
+
+                // show auto PDA
+                const pdass = await fetchJson('{{ url('aum/pdas/pdasbypcass') }}/' + pcaId);
+                setSelectOptions($pdass, pdass, 'pda_id', 'pda_name', null);
+                $divPdass.show();
+
+                $pcaHidden.val(pcaId);
+                const pdaId = pdass?.[0]?.pda_id ?? '';
+                $pdaHidden.val(pdaId);
+            }
+
+            // Radio change
+            $('input[name="inlineRadioOptions"]').on('change', async function() {
+                resetAll();
+                const val = $(this).val();
+
+                if (val === 'Ranting') {
+                    $divRanting.show();
+                    await loadRantings();
+                }
+
+                if (val === 'PCA') {
+                    $divPcas.show();
+                    await loadPcas();
+                }
+
+                if (val === 'PDA') {
+                    $divPdas.show();
+                    await loadPdas();
+                    // untuk PDA, pcaHidden tetap kosong, pdaHidden set saat pilih pda
+                }
+            });
+
+            // when select ranting chosen
+            $rantings.on('change', async function() {
+                $pcaHidden.val('');
+                $pdaHidden.val('');
+                $pcass.empty().trigger('change');
+                $pdass.empty().trigger('change');
+                await rantingSelected($(this).val());
+            });
+
+            // when select pca chosen (manual)
+            $pcas.on('change', async function() {
+                $pcaHidden.val('');
+                $pdaHidden.val('');
+                $pdass.empty().trigger('change');
+                await pcaSelected($(this).val());
+            });
+
+            // when select pda chosen (manual)
+            $pdas.on('change', function() {
+                $pdaHidden.val($(this).val() || '');
+            });
+
+            // preview images (punyamu tetap)
+            $('#images').on('change', function() {
+                $('div.imgPreview').html('');
+                if (this.files) {
+                    for (let i = 0; i < this.files.length; i++) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            $('<img>').attr('src', e.target.result).appendTo('div.imgPreview');
+                        };
+                        reader.readAsDataURL(this.files[i]);
+                    }
+                }
             });
         });
     </script>

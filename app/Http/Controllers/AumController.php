@@ -42,49 +42,62 @@ class AumController extends Controller
 
     public function storeCreateAum(Request $request)
     {
-        // dd($request);
-
-        $aum = $request->validate([
-            'inlineRadioOptions' => 'required',
+        $request->validate([
+            'inlineRadioOptions' => 'required|in:Ranting,PCA,PDA',
             'kepemilikan' => 'required',
             'bidangusaha' => 'required',
-            'pda' => 'required',
-            'name' => 'required'
+            'name' => 'required|string|max:255',
+            'address' => 'nullable|string',
+            // ranting/pca/pda conditional:
+            'ranting_id' => 'nullable',
+            'pca' => 'nullable',
+            'pda' => 'nullable',
         ]);
 
-        date_default_timezone_set('Asia/Jakarta');
+        // conditional rule manual
+        if ($request->inlineRadioOptions === 'Ranting' && empty($request->ranting_id)) {
+            return back()->withErrors(['ranting_id' => 'Ranting wajib dipilih.'])->withInput();
+        }
+        if ($request->inlineRadioOptions === 'PCA' && empty($request->pca)) {
+            return back()->withErrors(['pca' => 'PCA wajib dipilih.'])->withInput();
+        }
+        if ($request->inlineRadioOptions === 'PDA' && empty($request->pda)) {
+            return back()->withErrors(['pda' => 'PDA wajib dipilih.'])->withInput();
+        }
+
         $aum = new Aum;
-        $aum->ranting_id = $request->ranting;
-        $aum->pca_id = $request->pca;
-        $aum->pda_id = $request->pda;
+        $aum->pengelolaby = $request->inlineRadioOptions;
+
+        $aum->ranting_id = $request->inlineRadioOptions === 'Ranting' ? $request->ranting_id : null;
+        $aum->pca_id     = in_array($request->inlineRadioOptions, ['Ranting', 'PCA']) ? $request->pca : null;
+        $aum->pda_id     = $request->pda; // nanti auto keisi dari JS
+
         $aum->id_kepemilikan = $request->kepemilikan;
         $aum->id_bidangusaha = $request->bidangusaha;
-        $aum->pengelolaby = $request->inlineRadioOptions;
         $aum->aum_name = $request->name;
         $aum->address = $request->address;
         $aum->created_by = $request->id;
         $aum->save();
 
-        // $images = [];
+        // upload images (pastikan folder ada)
         if ($request->hasfile('images')) {
+            File::ensureDirectoryExists(public_path('upload/aum'));
             foreach ($request->file('images') as $image) {
                 $namafile = str_replace(' ', '_', $request->name);
-
                 $name = $namafile . '_' . time() . rand(1, 50) . '.' . $image->extension();
-                // File::put(public_path('upload/aum/'.$name), $dataImage);
                 $image->move(public_path('/upload/aum/'), $name);
 
                 $aum_image = new AumImage();
-                $aum_image['id_aum'] = $aum->id_aum;
-                $aum_image['images'] = str_replace('"', '', $name);
-                $aum_image['created_by'] = $request->id;
+                $aum_image->id_aum = $aum->id_aum;
+                $aum_image->images = str_replace('"', '', $name);
+                $aum_image->created_by = $request->id;
                 $aum_image->save();
-
             }
         }
 
         return redirect('/aum')->with('success', 'Alhamdulillah, data AUM berhasil disimpan');
     }
+
 
     public function aumDetail($id)
     {
@@ -142,7 +155,6 @@ class AumController extends Controller
 
         $pcass = DB::table('pca')->where('pca.pca_id', $pca)->get()->toArray();
         return response()->json($pcass);
-
     }
 
     public function pdasByrantings($id)
@@ -152,7 +164,6 @@ class AumController extends Controller
 
         $pdass = DB::table('pda')->where('pda.pda_id', $pda)->get()->toArray();
         return response()->json($pdass);
-
     }
 
     public function pdasBypcass($id)
@@ -162,7 +173,6 @@ class AumController extends Controller
 
         $pdass = DB::table('pda')->where('pda.pda_id', $pda)->get()->toArray();
         return response()->json($pdass);
-
     }
 
     public function editAum($id)
@@ -285,11 +295,9 @@ class AumController extends Controller
         DB::table('aum')
             ->where('id_aum', $aumId)
             ->update([
-                'deleted_at'=> now(),
+                'deleted_at' => now(),
             ]);
 
         return redirect('/aum')->with('error', 'AUM telah didelete.');
-
     }
-
 }

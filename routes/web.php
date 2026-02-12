@@ -258,17 +258,31 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
     // AUM
     Route::prefix('aum')->name('aum.')->group(function () {
         Route::get('/', [AumController::class, 'aumIndex'])->name('index');
+
+        // create
         Route::get('/create', [AumController::class, 'createAum'])->name('create');
         Route::post('/', [AumController::class, 'storeCreateAum'])->name('store');
+        Route::post('/create', [AumController::class, 'storeCreateAum'])->name('store.legacy'); // form lama action="/aum/create"
 
         Route::post('/storeimage', [AumController::class, 'storeImage'])->name('storeimage');
 
+        // detail (kamu pakai /aum/detail/{id} di blade)
+        Route::get('/detail/{id}', [AumController::class, 'aumDetail'])->name('detail');
+
+        // edit/update (REST)
         Route::get('/{id}/edit', [AumController::class, 'editAum'])->name('edit');
         Route::put('/{id}', [AumController::class, 'updateAum'])->name('update');
-        Route::delete('/{id}', [AumController::class, 'deleteAum'])->name('destroy');
 
+        // ✅ legacy supaya /aum/edit/{id} tidak 404
+        Route::get('/edit/{id}', [AumController::class, 'editAum'])->name('edit.legacy');
+        Route::put('/update/{id}', [AumController::class, 'updateAum'])->name('update.legacy');
+
+        // delete (REST + legacy)
+        Route::delete('/{id}', [AumController::class, 'deleteAum'])->name('destroy');
+        Route::get('/delete/{id}', [AumController::class, 'deleteAum'])->name('destroy.legacy');
+
+        // endpoints cascade
         Route::get('/aumbyranting', [AumController::class, 'aumByRanting'])->name('aumbyranting');
-        Route::get('/detail/{id}', [AumController::class, 'aumDetail'])->name('detail');
         Route::get('/aumbypca', [AumController::class, 'aumByPca'])->name('aumbypca');
         Route::get('/aumbypda', [AumController::class, 'aumByPda'])->name('aumbypda');
 
