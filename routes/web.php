@@ -106,14 +106,31 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
 
     // PCA
     Route::prefix('pca')->name('pca.')->group(function () {
+        // index
         Route::get('/', [PcaController::class, 'pcaIndex'])->name('index');
+
+        // create form
         Route::get('/create', [PcaController::class, 'createPca'])->name('create');
+
+        // ✅ ini yang hilang: store (POST)
+        // REST recommended:
         Route::post('/', [PcaController::class, 'storeCreatePca'])->name('store');
+
+        // ✅ kompatibel blade lama yang action="/pca/create"
+        Route::post('/create', [PcaController::class, 'storeCreatePca'])->name('store.legacy');
+
+        // edit/update
         Route::get('/{id}/edit', [PcaController::class, 'editPca'])->name('edit');
         Route::put('/{id}', [PcaController::class, 'updatePca'])->name('update');
+
+        // delete (sebaiknya soft delete kalau tabel ada deleted_at)
         Route::delete('/{id}', [PcaController::class, 'deletePca'])->name('destroy');
 
+        // endpoint tambahan kamu
         Route::get('/pdabydistricts/{id}', [PcaController::class, 'pdaBydistricts'])->name('pdabydistricts');
+
+        // legacy delete via GET kalau masih ada link lama
+        Route::get('/delete/{id}', [PcaController::class, 'deletePca'])->name('delete.legacy');
     });
 
     // Kader
@@ -163,7 +180,7 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
         Route::post('/create', [DocumentController::class, 'store'])->name('store');
 
         Route::get('/{id}/edit', [DocumentController::class, 'edit'])->name('edit');
-        Route::put('/{id}', [DocumentController::class, 'update'])->name('update'); 
+        Route::put('/{id}', [DocumentController::class, 'update'])->name('update');
 
         Route::delete('/{id}', [DocumentController::class, 'destroy'])->name('destroy');  // soft delete
         Route::get('/delete/{id}', [DocumentController::class, 'destroyViaGet'])->name('delete.legacy'); // optional

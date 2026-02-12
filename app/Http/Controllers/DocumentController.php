@@ -90,13 +90,65 @@ class DocumentController extends Controller
         return $this->destroy($id);
     }
 
-    // opsional: stub edit/update kalau belum dipakai
     public function edit($id)
     {
-        abort(404);
+        $doc = DB::table('document')
+            ->where('id_doc', $id)
+            ->whereNull('deleted_at')
+            ->first();
+
+        abort_if(!$doc, 404);
+
+        $filetype = DB::table('filetype')
+            ->where('isActive', 'Yes')
+            ->whereNull('deleted_at')
+            ->orderBy('filename')
+            ->get();
+
+        return view('auth.document.editdocument', compact('doc', 'filetype'));
     }
+
     public function update(Request $request, $id)
     {
-        abort(404);
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'filetype' => ['required'],
+            // upload boleh kosong saat update
+            'uploaded_doc' => ['nullable', 'file', 'mimes:pdf,jpeg,jpg,png', 'max:10240'],
+        ]);
+
+        $doc = Document::where('id_doc', $id)->whereNull('deleted_at')->firstOrFail();
+
+        $doc->docname = $request->name;
+        $doc->id_filetype = $request->filetype;
+
+        // kalau user bisa pindah PDA/PCA, biarkan. kalau tidak, jangan diubah.
+        // $doc->pda_id = Auth::user()->pda_id;
+
+        // Jika upload file baru
+        if ($request->hasFile('uploaded_doc')) {
+            $dir = public_path('upload/document');
+            File::ensureDirectoryExists($dir);
+
+            $file = $request->file('uploaded_doc');
+            $ext = strtolower($file->getClientOriginalExtension());
+            $newFilename = 'uploaded_doc-' . date('Y-m-d') . '-' . uniqid() . '.' . $ext;
+
+            File::put($dir . DIRECTORY_SEPARATOR . $newFilename, $file->get());
+
+            // OPTIONAL: hapus file lama di disk (amanin dulu)
+            if (!empty($doc->uploaded_doc)) {
+                $oldPath = $dir . DIRECTORY_SEPARATOR . $doc->uploaded_doc;
+                if (File::exists($oldPath)) {
+                    File::delete($oldPath);
+                }
+            }
+
+            $doc->uploaded_doc = $newFilename;
+        }
+
+        $doc->save();
+
+        return redirect()->route('document.index')->with('succes', 'Document berhasil diupdate');
     }
 }

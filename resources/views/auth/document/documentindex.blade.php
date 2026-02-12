@@ -76,11 +76,12 @@
                                             <ul class="list-inline mb-0">
 
                                                 {{-- Kalau belum ada fitur edit dokumen, mending hidden dulu --}}
-                                                {{-- <li class="list-inline-item">
-                                                    <a href="{{ route('document.edit', $doc->id_doc) }}" class="px-2 text-primary">
+                                                <li class="list-inline-item">
+                                                    <a href="{{ route('document.edit', $doc->id_doc) }}"
+                                                        class="px-2 text-primary">
                                                         <i class="uil uil-pen font-size-18"></i>
                                                     </a>
-                                                </li> --}}
+                                                </li>
 
                                                 <li class="list-inline-item">
                                                     <form action="{{ route('document.destroy', $doc->id_doc) }}"
