@@ -129,31 +129,31 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
 
     // PCA
     Route::prefix('pca')->name('pca.')->group(function () {
+
         // index
         Route::get('/', [PcaController::class, 'pcaIndex'])->name('index');
 
-        // create form
+        // create
         Route::get('/create', [PcaController::class, 'createPca'])->name('create');
-
-        // ✅ ini yang hilang: store (POST)
-        // REST recommended:
         Route::post('/', [PcaController::class, 'storeCreatePca'])->name('store');
+        Route::post('/create', [PcaController::class, 'storeCreatePca'])->name('store.legacy'); // form lama action="/pca/create"
 
-        // ✅ kompatibel blade lama yang action="/pca/create"
-        Route::post('/create', [PcaController::class, 'storeCreatePca'])->name('store.legacy');
-
-        // edit/update
+        // edit/update (REST)
         Route::get('/{id}/edit', [PcaController::class, 'editPca'])->name('edit');
         Route::put('/{id}', [PcaController::class, 'updatePca'])->name('update');
 
-        // delete (sebaiknya soft delete kalau tabel ada deleted_at)
+        // ✅ legacy supaya URL lama /pca/edit/{id} tidak 404
+        Route::get('/edit/{id}', [PcaController::class, 'editPca'])->name('edit.legacy');
+        Route::put('/update/{id}', [PcaController::class, 'updatePca'])->name('update.legacy');
+
+        // destroy (REST)
         Route::delete('/{id}', [PcaController::class, 'deletePca'])->name('destroy');
 
-        // endpoint tambahan kamu
-        Route::get('/pdabydistricts/{id}', [PcaController::class, 'pdaBydistricts'])->name('pdabydistricts');
+        // ✅ legacy delete via GET kalau masih ada link lama
+        Route::get('/delete/{id}', [PcaController::class, 'deletePca'])->name('destroy.legacy');
 
-        // legacy delete via GET kalau masih ada link lama
-        Route::get('/delete/{id}', [PcaController::class, 'deletePca'])->name('delete.legacy');
+        // ajax lookup kamu
+        Route::get('/pdabydistricts/{id}', [PcaController::class, 'pdaBydistricts'])->name('pdabydistricts');
     });
 
     // Ranting
