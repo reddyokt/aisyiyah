@@ -2,13 +2,24 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Document extends Model
 {
-    use HasFactory;
+    use SoftDeletes;
 
     protected $table = 'document';
-    protected $fillable = ['id_filetype', 'pda_id', 'pca_id', 'docname', 'uploaded_doc', 'deleted_at'];
+    protected $primaryKey = 'id_doc';
+
+    protected $fillable = [
+        'docname',
+        'id_filetype',
+        'pda_id',
+        'pca_id',
+        'created_by',
+        'uploaded_doc',
+    ];
+
+    protected $dates = ['deleted_at'];
 }

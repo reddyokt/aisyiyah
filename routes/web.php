@@ -45,6 +45,19 @@ Route::post('/logout', [AuthenticationController::class, 'logout'])
     ->middleware('auth')
     ->name('logout');
 
+
+// Landing property admin
+Route::prefix('landingproperty')->name('landingproperty.')->group(function () {
+    Route::get('/', [LandingPageController::class, 'landingProperty'])->name('index');
+    Route::post('/update', [LandingPageController::class, 'updateProperty'])->name('update');
+});
+
+// Data PWA
+Route::prefix('dataPWA')->name('pwa.')->group(function () {
+    Route::get('/', [LandingPageController::class, 'dataPwaNew'])->name('index');
+    Route::get('/detail/pda/{id}', [LandingPageController::class, 'dataDetailPda'])->name('detail.pda');
+});
+
 //
 // PROTECTED ROUTES (WAJIB LOGIN)
 //
@@ -125,7 +138,16 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
     Route::prefix('filetype')->name('filetype.')->group(function () {
         Route::get('/', [FiletypeController::class, 'filetypeIndex'])->name('index');
         Route::get('/create', [FiletypeController::class, 'createFiletype'])->name('create');
-        Route::post('/', [FiletypeController::class, 'storeCreateFiletype'])->name('store');
+        Route::post('/create', [FiletypeController::class, 'storeCreateFiletype'])->name('store');
+
+        // REST style
+        Route::get('/{id}/edit', [FiletypeController::class, 'editFiletype'])->name('edit');
+        Route::put('/{id}', [FiletypeController::class, 'updateFiletype'])->name('update');
+        Route::delete('/{id}', [FiletypeController::class, 'destroy'])->name('destroy');
+
+        // kompatibel URL lama (biar /filetype/edit/1 & /filetype/delete/1 gak 404)
+        Route::get('/edit/{id}', [FiletypeController::class, 'editFiletype'])->name('edit.legacy');
+        Route::get('/delete/{id}', [FiletypeController::class, 'destroyViaGet'])->name('delete.legacy');
     });
 
     // Bidang Usaha
@@ -135,11 +157,18 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
         Route::post('/', [BidangUsahaController::class, 'storeCreateBidangusaha'])->name('store');
     });
 
-    // Document (INI YANG KAMU MAU KUNCI)
     Route::prefix('document')->name('document.')->group(function () {
         Route::get('/', [DocumentController::class, 'documentIndex'])->name('index');
+
+        // create (sesuai blade kamu: action="/document/create")
         Route::get('/create', [DocumentController::class, 'createDocument'])->name('create');
-        Route::post('/', [DocumentController::class, 'storeCreateDocument'])->name('store');
+        Route::post('/create', [DocumentController::class, 'storeCreateDocument'])->name('store');
+
+        // delete soft (REST)
+        Route::delete('/{id}', [DocumentController::class, 'destroy'])->name('destroy');
+
+        // OPTIONAL: kompatibel URL lama kalau kamu punya tombol GET /document/delete/{id}
+        Route::get('/delete/{id}', [DocumentController::class, 'destroyViaGet'])->name('delete.get');
     });
 
     // Surat
@@ -242,17 +271,5 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
 
         Route::get('/unrealized/{id}', [ProgramKerjaController::class, 'unrealized'])->name('unrealized');
         Route::get('/realized/{id}', [ProgramKerjaController::class, 'realized'])->name('realized');
-    });
-
-    // Landing property admin
-    Route::prefix('landingproperty')->name('landingproperty.')->group(function () {
-        Route::get('/', [LandingPageController::class, 'landingProperty'])->name('index');
-        Route::post('/update', [LandingPageController::class, 'updateProperty'])->name('update');
-    });
-
-    // Data PWA
-    Route::prefix('dataPWA')->name('pwa.')->group(function () {
-        Route::get('/', [LandingPageController::class, 'dataPwaNew'])->name('index');
-        Route::get('/detail/pda/{id}', [LandingPageController::class, 'dataDetailPda'])->name('detail.pda');
     });
 });
