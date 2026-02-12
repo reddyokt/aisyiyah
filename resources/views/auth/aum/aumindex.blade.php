@@ -132,15 +132,4 @@
     <script src="{{ URL::asset('/assets/libs/jszip/jszip.min.js') }}"></script>
     <script src="{{ URL::asset('/assets/libs/pdfmake/pdfmake.min.js') }}"></script>
     <script src="{{ URL::asset('/assets/js/pages/datatables.init.js') }}"></script>
-
-    <script>
-        $(function() {
-            $('#datatable').DataTable({
-                pageLength: 10,
-                order: [
-                    [0, 'asc']
-                ]
-            });
-        });
-    </script>
 @endsection
