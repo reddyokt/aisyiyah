@@ -156,6 +156,40 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
         Route::get('/delete/{id}', [PcaController::class, 'deletePca'])->name('delete.legacy');
     });
 
+    // Ranting
+    Route::prefix('ranting')->name('ranting.')->group(function () {
+
+        // index
+        Route::get('/', [RantingController::class, 'rantingIndex'])->name('index');
+
+        // create form
+        Route::get('/create', [RantingController::class, 'createRanting'])->name('create');
+
+        // store (REST recommended)
+        Route::post('/', [RantingController::class, 'storeCreateRanting'])->name('store');
+
+        // legacy: kalau blade lama action="/ranting/create"
+        Route::post('/create', [RantingController::class, 'storeCreateRanting'])->name('store.legacy');
+
+        // edit form (REST + legacy)
+        Route::get('/{id}/edit', [RantingController::class, 'editRanting'])->name('edit');
+        Route::get('/edit/{id}', [RantingController::class, 'editRanting'])->name('edit.legacy');
+
+        // update (REST + legacy)
+        Route::put('/{id}', [RantingController::class, 'updateRanting'])->name('update');
+        Route::put('/update/{id}', [RantingController::class, 'updateRanting'])->name('update.legacy');
+
+        // destroy (REST)
+        Route::delete('/{id}', [RantingController::class, 'deleteRanting'])->name('destroy');
+
+        // legacy: kalau masih ada link GET /ranting/delete/{id}
+        Route::get('/delete/{id}', [RantingController::class, 'deleteRanting'])->name('destroy.legacy');
+
+        // endpoints tambahan (lookup)
+        Route::get('/pcabyvillages/{id}', [PcaController::class, 'pcaByvillages'])->name('pcabyvillages');
+        Route::get('/pcabypdass/{id}', [PcaController::class, 'pcaBypdass'])->name('pcabypdass');
+    });
+
     // Kader
     Route::prefix('kader')->name('kader.')->group(function () {
         Route::get('/', [KaderController::class, 'kaderIndex'])->name('index');
@@ -219,19 +253,6 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
 
         Route::get('/inbox/read/{id}', [SuratController::class, 'readInbox'])->name('inbox.read');
         Route::get('/sent/read/{id}', [SuratController::class, 'readSend'])->name('sent.read');
-    });
-
-    // Ranting
-    Route::prefix('ranting')->name('ranting.')->group(function () {
-        Route::get('/', [RantingController::class, 'rantingIndex'])->name('index');
-        Route::get('/create', [RantingController::class, 'createRanting'])->name('create');
-        Route::post('/', [RantingController::class, 'storeCreateRanting'])->name('store');
-        Route::get('/{id}/edit', [RantingController::class, 'editRanting'])->name('edit');
-        Route::put('/{id}', [RantingController::class, 'updateRanting'])->name('update');
-        Route::delete('/{id}', [RantingController::class, 'deleteRanting'])->name('destroy');
-
-        Route::get('/pcabyvillages/{id}', [PcaController::class, 'pcaByvillages'])->name('pcabyvillages');
-        Route::get('/pcabypdass/{id}', [PcaController::class, 'pcaBypdass'])->name('pcabypdass');
     });
 
     // AUM
