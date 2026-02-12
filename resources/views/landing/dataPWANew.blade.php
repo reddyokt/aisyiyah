@@ -114,7 +114,7 @@
                         if (activeEls.length > 0) {
                             const index = activeEls[0].index;
                             const pdaId = pdaIds[index];
-                            const url = `/detail/pda/${pdaId}`;
+                            const url = `dataPWA/detail/pda/${pdaId}`;
                             window.open(url, '_blank'); // buka di tab baru
                         }
                     }
