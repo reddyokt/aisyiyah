@@ -1,55 +1,117 @@
 @extends('layouts-landing.master')
 
-@section('title', "Data Pimpinan Cabang 'Aisyiyah")
-
-@section('css')
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    <style>
-        #map {
-            height: 600px;
-        }
-
-        .legend {
-            background: white;
-            line-height: 18px;
-            padding: 6px;
-            font-size: 12px;
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
-            border-radius: 5px;
-        }
-
-        .legend i {
-            width: 18px;
-            height: 18px;
-            float: left;
-            margin-right: 8px;
-            opacity: 0.7;
-        }
-    </style>
-@endsection
+@section('title', "Data Pimpinan Wilayah 'Aisyiyah DKI Jakarta")
 
 @section('content')
-    <div class="container mt-4 mb-10">
-        <div class="card shadow-sm">
-            <div class="card-header bg-success text-white mb-5">
-                <h5 class="mb-0">Visualisasi Data PWA DKI Jakarta</h5>
-            </div>
-            <div class="card-body p-0">
-                <div class="pda-grafik mb-5">
-                    <canvas id="chartPDA" height="400"></canvas>
+    <!-- Page Header -->
+    <section class="wrapper image-wrapper bg-image bg-overlay bg-overlay-300 text-white"
+        data-image-src="{{ URL::asset('landing/assets/img/photos/Sejarah-Aisyiyah.jpg') }}">
+        <div class="container pt-18 pb-16">
+            <div class="row">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h1 class="display-3 text-white mb-3">Data PWA DKI Jakarta</h1>
+                    <p class="lead fs-lg text-white mb-0">Visualisasi sebaran Pimpinan Cabang 'Aisyiyah se-DKI Jakarta</p>
                 </div>
-                {{-- <div id="map"></div> --}}
             </div>
         </div>
-    </div>
+    </section>
+
+    <!-- Statistics Cards -->
+    <section class="wrapper bg-light">
+        <div class="container pt-12 pb-6">
+            <div class="row gx-md-6 gy-4 text-center">
+                <div class="col-md-4" data-cues="zoomIn" data-delay="200">
+                    <div class="card shadow-sm border-0 rounded-4 h-100">
+                        <div class="card-body p-4">
+                            <div class="icon btn btn-circle btn-soft-primary pe-none mx-auto mb-3">
+                                <i class="uil uil-building fs-24"></i>
+                            </div>
+                            <h3 class="counter-lg text-primary mb-1">{{ $data->count() }}</h3>
+                            <p class="text-muted mb-0">PDA</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4" data-cues="zoomIn" data-delay="400">
+                    <div class="card shadow-sm border-0 rounded-4 h-100">
+                        <div class="card-body p-4">
+                            <div class="icon btn btn-circle btn-soft-violet pe-none mx-auto mb-3">
+                                <i class="uil uil-location-point fs-24"></i>
+                            </div>
+                            <h3 class="counter-lg text-violet mb-1">{{ $data->sum('total_pca') }}</h3>
+                            <p class="text-muted mb-0">Total Cabang (PCA)</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4" data-cues="zoomIn" data-delay="600">
+                    <div class="card shadow-sm border-0 rounded-4 h-100">
+                        <div class="card-body p-4">
+                            <div class="icon btn btn-circle btn-soft-orange pe-none mx-auto mb-3">
+                                <i class="uil uil-analysis fs-24"></i>
+                            </div>
+                            <h3 class="counter-lg text-orange mb-1">{{ number_format($data->avg('total_pca'), 1) }}</h3>
+                            <p class="text-muted mb-0">Rata-rata PCA per PDA</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Chart Section -->
+    <section class="wrapper bg-white">
+        <div class="container pb-14 pb-md-16">
+            <div class="row text-center mb-8">
+                <div class="col-lg-8 mx-auto">
+                    <h2 class="fs-16 text-uppercase text-primary mb-3">Grafik</h2>
+                    <h3 class="display-4 mb-4">Sebaran PCA per PDA</h3>
+                    <p class="lead fs-lg text-muted">Klik pada grafik untuk melihat detail masing-masing PDA.</p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-10 mx-auto">
+                    <div class="card shadow-lg border-0 rounded-4">
+                        <div class="card-body p-4 p-md-6">
+                            <canvas id="chartPDA" height="400"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PDA List -->
+            <div class="row mt-10">
+            <div class="col-lg-10 mx-auto">
+                    <h4 class="mb-4"><i class="uil uil-list-ul me-2 text-primary"></i>Daftar PDA</h4>
+                    <div class="row g-4">
+                        @foreach ($data as $item)
+                            <div class="col-md-6" data-cues="fadeIn" data-delay="{{ ($loop->index % 2) * 150 }}">
+                                <a href="{{ url('dataPWA/detail/pda/' . $item->pda_id) }}" class="text-decoration-none">
+                                    <div class="card shadow-sm lift border-0 rounded-3 h-100">
+                                        <div class="card-body p-4 d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h5 class="mb-1 text-dark">{{ $item->pda_name }}</h5>
+                                                <span class="badge bg-soft-primary text-primary rounded-pill">
+                                                    <i class="uil uil-building me-1"></i>{{ $item->total_pca }} PCA
+                                                </span>
+                                            </div>
+                                            <div class="flex-shrink-0">
+                                                <span class="icon btn btn-circle btn-soft-primary pe-none">
+                                                    <i class="uil uil-arrow-right fs-18"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 @endsection
 
 @section('page-script')
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
@@ -59,154 +121,117 @@
             const values = {!! json_encode($data->pluck('total_pca')) !!};
             const pdaIds = {!! json_encode($data->pluck('pda_id')) !!};
 
-            const solidColors = [
-                '#FF00FF', '#ffff7f', '#ffbf7f', '#ff7f7f',
-                '#7fff7f', '#7fbfff', '#64B5F6', '#81C784',
-                '#FF8A65', '#F48FB1'
+            const gradientColors = [
+                'rgba(79, 70, 229, 0.85)',
+                'rgba(139, 92, 246, 0.85)',
+                'rgba(6, 182, 212, 0.85)',
+                'rgba(16, 185, 129, 0.85)',
+                'rgba(245, 158, 11, 0.85)',
+                'rgba(239, 68, 68, 0.85)',
+                'rgba(59, 130, 246, 0.85)',
+                'rgba(168, 85, 247, 0.85)',
+                'rgba(236, 72, 153, 0.85)',
+                'rgba(20, 184, 166, 0.85)',
             ];
 
-            const chart = new Chart(ctx, {
+            const borderColors = gradientColors.map(c => c.replace('0.85', '1'));
+
+            new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: labels,
                     datasets: [{
                         label: 'Jumlah PCA',
                         data: values,
-                        backgroundColor: labels.map((_, i) => solidColors[i % solidColors.length]),
-                        borderColor: labels.map((_, i) => solidColors[i % solidColors.length]),
+                        backgroundColor: labels.map((_, i) => gradientColors[i % gradientColors
+                            .length]),
+                        borderColor: labels.map((_, i) => borderColors[i % borderColors.length]),
                         borderWidth: 1,
-                        barPercentage: 0.8,
-                        categoryPercentage: 0.9
+                        borderRadius: 6,
+                        borderSkipped: false,
+                        barPercentage: 0.75,
+                        categoryPercentage: 0.85,
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     animation: {
-                        duration: 1000,
-                        easing: 'easeOutQuart'
-                    },
-                    hover: {
-                        mode: 'nearest', // tetap bisa klik
-                        animationDuration: 0
-                    },
-                    interaction: {
-                        mode: 'nearest',
-                        intersect: true
+                        duration: 1200,
+                        easing: 'easeOutQuart',
                     },
                     plugins: {
                         legend: {
-                            display: false
+                            display: false,
                         },
                         tooltip: {
-                            enabled: true
-                        }
+                            backgroundColor: 'rgba(0,0,0,0.8)',
+                            padding: 12,
+                            cornerRadius: 8,
+                            titleFont: {
+                                size: 14,
+                                weight: 'bold',
+                            },
+                            bodyFont: {
+                                size: 13,
+                            },
+                            callbacks: {
+                                label: function(ctx) {
+                                    return `Jumlah PCA: ${ctx.raw}`;
+                                }
+                            }
+                        },
                     },
                     scales: {
+                        x: {
+                            grid: {
+                                display: false,
+                            },
+                            ticks: {
+                                maxRotation: 45,
+                                font: {
+                                    size: 11,
+                                },
+                            },
+                        },
                         y: {
                             beginAtZero: true,
                             ticks: {
-                                stepSize: 1
-                            }
-                        }
+                                stepSize: 1,
+                                font: {
+                                    size: 12,
+                                },
+                            },
+                            grid: {
+                                color: 'rgba(0,0,0,0.06)',
+                            },
+                        },
                     },
                     onClick: (evt, activeEls) => {
                         if (activeEls.length > 0) {
                             const index = activeEls[0].index;
                             const pdaId = pdaIds[index];
-                            const url = `dataPWA/detail/pda/${pdaId}`;
-                            window.open(url, '_blank'); // buka di tab baru
+                            window.location.href = `dataPWA/detail/pda/${pdaId}`;
                         }
-                    }
-                }
+                    },
+                },
             });
         });
     </script>
-
-    {{-- <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var map = L.map('map').setView([-6.2088, 106.8456], 10);
-
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19,
-                attribution: '© OpenStreetMap'
-            }).addTo(map);
-
-            const geoFiles = [{
-                    url: "{{ asset('geojson/31.01_Administrasi_Kepulauan_Seribu.geojson') }}",
-                    name: "Kepulauan Seribu",
-                    color: "#FF00FF"
-                },
-                {
-                    url: "{{ asset('geojson/31.71_Kota_Administrasi_Jakarta_Pusat.geojson') }}",
-                    name: "Jakarta Pusat",
-                    color: "#ff7f7f"
-                },
-                {
-                    url: "{{ asset('geojson/31.72_Kota_Administrasi_Jakarta_Utara.geojson') }}",
-                    name: "Jakarta Utara",
-                    color: "#7fbfff"
-                },
-                {
-                    url: "{{ asset('geojson/31.73_Kota_Administrasi_Jakarta_Barat.geojson') }}",
-                    name: "Jakarta Barat",
-                    color: "#7fff7f"
-                },
-                {
-                    url: "{{ asset('geojson/31.74_Kota_Administrasi_Jakarta_Selatan.geojson') }}",
-                    name: "Jakarta Selatan",
-                    color: "#ffff7f"
-                },
-                {
-                    url: "{{ asset('geojson/31.75_Kota_Administrasi_Jakarta_Timur.geojson') }}",
-                    name: "Jakarta Timur",
-                    color: "#ffbf7f"
-                },
-            ];
-
-            // Layer group untuk menggabungkan semua kota
-            let jakartaLayerGroup = L.featureGroup();
-
-            // Load semua GeoJSON
-            geoFiles.forEach(g => {
-                fetch(g.url)
-                    .then(response => response.json())
-                    .then(data => {
-                        const layer = L.geoJson(data, {
-                            style: {
-                                fillColor: g.color,
-                                weight: 2,
-                                opacity: 1,
-                                color: 'white',
-                                dashArray: '3',
-                                fillOpacity: 0.7
-                            },
-                            onEachFeature: (feature, layer) => {
-                                layer.bindPopup(`<b>${g.name}</b>`);
-                            }
-                        });
-                        jakartaLayerGroup.addLayer(layer);
-                    });
-            });
-
-            // Setelah semua data selesai dimuat, fokuskan peta
-            setTimeout(() => {
-                jakartaLayerGroup.addTo(map);
-                map.fitBounds(jakartaLayerGroup.getBounds());
-            }, 1500);
-
-            // Legend
-            var legend = L.control({
-                position: 'bottomright'
-            });
-            legend.onAdd = function() {
-                var div = L.DomUtil.create('div', 'legend');
-                geoFiles.forEach(g => {
-                    div.innerHTML += `<i style="background:${g.color}"></i> ${g.name}<br>`;
-                });
-                return div;
-            };
-            legend.addTo(map);
-        });
-    </script> --}}
 @endsection
+
+@push('head')
+<style>
+    .counter-lg {
+        font-size: 2.2rem;
+        font-weight: 700;
+    }
+    .card.lift {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card.lift:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1) !important;
+    }
+</style>
+@endpush

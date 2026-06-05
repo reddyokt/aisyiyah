@@ -16,7 +16,7 @@
               <li class="nav-item"><a class="nav-link" href="{{'/'}}">Home</a></li>
               <li class="nav-item"><a class="nav-link" href="{{url('/'.'#about')}}">Profile</a></li>
               <li class="nav-item"><a class="nav-link" href="/dataPWA">Data PWA</a></li>
-              <li class="nav-item"><a class="nav-link" href="{{url('/'.'#news')}}">Berita</a></li>
+              <li class="nav-item"><a class="nav-link" href="{{ route('berita') }}">Berita</a></li>
               {{-- <li class="nav-item"><a class="nav-link" href="{{url('/'.'#contact')}}">Contact</a></li> --}}
             </ul>
             <!-- /.navbar-nav -->

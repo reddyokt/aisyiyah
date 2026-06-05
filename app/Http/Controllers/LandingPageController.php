@@ -23,24 +23,50 @@ class LandingPageController extends Controller
                                     news.news_body as news_body, news.feature_image as feature_image,
                                     news.images as images, user.username as author,
                                     newscategory.category as category,news.status as status, news.created_at as created_at'))
+            ->orderBy('news.created_at', 'DESC')
+            ->limit(8)
             ->get()->toArray();
         return view('landing.index', compact('postLanding', 'landingprop'));
     }
 
-    public function postLanding()
+    public function postLanding(Request $request)
     {
-        $postLanding = DB::table('news')
+        $categories = DB::table('newscategory')
+            ->whereNull('deleted_at')
+            ->orderBy('category')
+            ->get();
+
+        // hitung jumlah berita per kategori (hindari N+1 di view)
+        $categoryCounts = DB::table('news')
+            ->where('status', 'published')
+            ->whereNull('deleted_at')
+            ->select('id_category', DB::raw('COUNT(*) as total'))
+            ->groupBy('id_category')
+            ->pluck('total', 'id_category');
+
+        $query = DB::table('news')
             ->leftJoin('user', 'user.user_id', '=', 'news.created_by')
             ->leftJoin('newscategory', 'newscategory.id_category', '=', 'news.id_category')
             ->leftJoin('user_role', 'user_role.user_id', '=', 'user.user_id')
             ->leftJoin('roles', 'roles.id', '=', 'user_role.role_id')
             ->whereNull('news.deleted_at')
-            ->select(DB::raw('news.news_id, news.news_title as news_title,
+            ->where('news.status', 'published')
+            ->select(DB::raw('news.news_id, news.news_title as news_title, news.slug as slug,
                                     news.news_body as news_body, news.feature_image as feature_image,
-                                    news.images as images, news.created_by as author,
-                                    newscategory.category as category,news.status as status, news.created_at as created_at'))
-            ->get()->toArray();
-        return view('landing.post', compact('postLanding'));
+                                    news.images as images, user.username as author,
+                                    newscategory.category as category, newscategory.id_category as id_category,
+                                    news.status as status, news.created_at as created_at'));
+
+        // filter by category
+        if ($request->filled('category')) {
+            $query->where('news.id_category', $request->category);
+        }
+
+        $postLanding = $query->orderBy('news.created_at', 'DESC')
+            ->paginate(12)
+            ->appends($request->query());
+
+        return view('landing.post', compact('postLanding', 'categories', 'categoryCounts'));
     }
 
     public function postBlog($slug)

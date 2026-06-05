@@ -28,6 +28,7 @@ use App\Http\Controllers\{
 //
 Route::get('/', [LandingPageController::class, 'index'])->name('landing');
 Route::get('/read/post/{news_id}', [LandingPageController::class, 'postBlog'])->name('post.read');
+Route::get('/berita', [LandingPageController::class, 'postLanding'])->name('berita');
 
 Route::get('index/{locale}', [HomeController::class, 'lang'])->name('lang.set');
 Route::post('/formsubmit', [HomeController::class, 'FormSubmit'])->name('form.submit');
