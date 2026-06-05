@@ -12,8 +12,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Support\Carbon;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Crypt;
 
 class KaderController extends Controller
 {
@@ -72,24 +73,45 @@ class KaderController extends Controller
     {
         date_default_timezone_set('Asia/Jakarta');
 
-        // $dataImage = $request->file('image');
         $req = $request->all();
-        // dd($req);
 
+        $pp = null;
+        $nbma = null;
 
-        if ($request->file('profile_picture')) {
-
+        // handle cropped profile picture (base64) dari Cropper.js
+        if ($request->filled('cropped_image')) {
+            $cropped = $request->input('cropped_image');
+            // extract base64 data
+            if (preg_match('/^data:image\/(\w+);base64,/', $cropped, $matches)) {
+                $ext = $matches[1] === 'jpeg' ? 'jpg' : $matches[1];
+                $pp = 'pp' . '-' . str_replace(' ', '_', $request->kader_name) . '.' . $ext;
+                $ppDir = public_path('upload/kader/profile_picture');
+                if (!File::exists($ppDir)) {
+                    File::makeDirectory($ppDir, 0755, true);
+                }
+                $dataImage = base64_decode(preg_replace('/^data:image\/\w+;base64,/', '', $cropped));
+                File::put($ppDir . '/' . $pp, $dataImage);
+            }
+        } elseif ($request->file('profile_picture')) {
             $extension = $request->file('profile_picture')->getClientOriginalExtension();
-            $pp = 'pp' . '-' . $request->kader_name . '.' . $extension;
+            $pp = 'pp' . '-' . str_replace(' ', '_', $request->kader_name) . '.' . $extension;
+            $ppDir = public_path('upload/kader/profile_picture');
+            if (!File::exists($ppDir)) {
+                File::makeDirectory($ppDir, 0755, true);
+            }
             $dataImage = $request->file('profile_picture')->get();
-            File::put(public_path('upload/kader/profile_picture/' . $pp), $dataImage);
+            File::put($ppDir . '/' . $pp, $dataImage);
         }
-        if ($request->file('nbma')) {
 
+        if ($request->file('nbma')) {
             $extension = $request->file('nbma')->getClientOriginalExtension();
-            $nbma = 'nbma' . '-' . $request->kader_name . '.' . $extension;
+            $nbma = 'nbma' . '-' . str_replace(' ', '_', $request->kader_name) . '.' . $extension;
+            $nbmaDir = public_path('upload/kader/nbma');
+            if (!File::exists($nbmaDir)) {
+                File::makeDirectory($nbmaDir, 0755, true);
+            }
             $dataImage = $request->file('nbma')->get();
-            File::put(public_path('upload/kader/nbma/' . $nbma), $dataImage);
+            File::put($nbmaDir . '/' . $nbma, $dataImage);
         }
 
         $kader_info = new Kader;
@@ -100,7 +122,7 @@ class KaderController extends Controller
         $kader_info->gender = $req['gender'];
         $kader_info->marital = $req['marital'];
         $kader_info->address = $req['address'];
-        $kader_info->anak = $req['anak'];
+        $kader_info->anak = $req['anak'] ?? 0;
         $kader_info->pekerjaan_id = $req['pekerjaan'];
         $kader_info->nbm = $req['nbm'];
         $kader_info->nba = $req['nba'];
@@ -268,6 +290,215 @@ class KaderController extends Controller
 
         $pdf = Pdf::loadView('auth.masterdata.kader.newprint', compact('kaderindex', 'kader_edu', 'kader_training', 'kader_orgint', 'kader_orgext', 'date'))->setPaper('a4', 'portrait');
         return $pdf->stream('detail'.'-'.$namepdf.'.pdf');
+    }
+
+    public function editKader($id)
+    {
+        try {
+            $id = Crypt::decrypt($id);
+        } catch (\Exception $e) {
+            // jika bukan encrypted, gunakan langsung
+        }
+
+        $kader = Kader::where('kader_id', $id)->whereNull('deleted_at')->first();
+        if (!$kader) {
+            return redirect()->route('kader.index')->with('error', 'Kader tidak ditemukan');
+        }
+
+        $ranting = DB::table('ranting')
+            ->whereNull('ranting.deleted_at')
+            ->get()->toArray();
+
+        $pekerjaan = DB::table('pekerjaan')
+            ->get()->toArray();
+
+        $kader_edu = KaderEdu::where('kader_id', $id)->get();
+        $kader_training = KaderTraining::where('kader_id', $id)->get();
+        $kader_orgint = KaderOrgInt::where('kader_id', $id)->get();
+        $kader_orgext = KaderOrgExt::where('kader_id', $id)->get();
+
+        $kader_file = KaderFile::where('kader_id', $id)->first();
+
+        return view('auth.masterdata.kader.editkader', compact(
+            'kader', 'ranting', 'pekerjaan',
+            'kader_edu', 'kader_training', 'kader_orgint', 'kader_orgext', 'kader_file'
+        ));
+    }
+
+    public function updateKader(Request $request, $id)
+    {
+        date_default_timezone_set('Asia/Jakarta');
+
+        try {
+            $id = Crypt::decrypt($id);
+        } catch (\Exception $e) {
+            // jika bukan encrypted, gunakan langsung
+        }
+
+        $kader = Kader::where('kader_id', $id)->whereNull('deleted_at')->first();
+        if (!$kader) {
+            return redirect()->route('kader.index')->with('error', 'Kader tidak ditemukan');
+        }
+
+        $req = $request->all();
+
+        // handle cropped profile picture (base64) dari Cropper.js
+        $pp = null;
+        if ($request->filled('cropped_image')) {
+            $cropped = $request->input('cropped_image');
+            if (preg_match('/^data:image\/(\w+);base64,/', $cropped, $matches)) {
+                $ext = $matches[1] === 'jpeg' ? 'jpg' : $matches[1];
+                $pp = 'pp' . '-' . str_replace(' ', '_', $request->kader_name) . '.' . $ext;
+                $ppDir = public_path('upload/kader/profile_picture');
+                if (!File::exists($ppDir)) {
+                    File::makeDirectory($ppDir, 0755, true);
+                }
+                $dataImage = base64_decode(preg_replace('/^data:image\/\w+;base64,/', '', $cropped));
+                File::put($ppDir . '/' . $pp, $dataImage);
+            }
+        } elseif ($request->file('profile_picture')) {
+            $extension = $request->file('profile_picture')->getClientOriginalExtension();
+            $pp = 'pp' . '-' . str_replace(' ', '_', $request->kader_name) . '.' . $extension;
+            $ppDir = public_path('upload/kader/profile_picture');
+            if (!File::exists($ppDir)) {
+                File::makeDirectory($ppDir, 0755, true);
+            }
+            $dataImage = $request->file('profile_picture')->get();
+            File::put($ppDir . '/' . $pp, $dataImage);
+        }
+
+        // handle nbma upload
+        $nbma = null;
+        if ($request->file('nbma')) {
+            $extension = $request->file('nbma')->getClientOriginalExtension();
+            $nbma = 'nbma' . '-' . str_replace(' ', '_', $request->kader_name) . '.' . $extension;
+            $nbmaDir = public_path('upload/kader/nbma');
+            if (!File::exists($nbmaDir)) {
+                File::makeDirectory($nbmaDir, 0755, true);
+            }
+            $dataImage = $request->file('nbma')->get();
+            File::put($nbmaDir . '/' . $nbma, $dataImage);
+        }
+
+        // update kader info
+        $kader->kader_name = $req['kader_name'];
+        $kader->kader_email = $req['email'];
+        $kader->kader_phone = str_replace('-', '', $req['phone']);
+        $kader->ranting_id = $req['ranting'];
+        $kader->gender = $req['gender'];
+        $kader->marital = $req['marital'];
+        $kader->address = $req['address'];
+        $kader->anak = $req['anak'] ?? 0;
+        $kader->pekerjaan_id = $req['pekerjaan'];
+        $kader->nbm = $req['nbm'];
+        $kader->nba = $req['nba'];
+        $kader->save();
+
+        // update kader file
+        $kader_file = KaderFile::where('kader_id', $id)->first();
+        if ($kader_file) {
+            if ($pp) {
+                $kader_file->filepp = $pp;
+            }
+            if ($nbma) {
+                $kader_file->filenbma = $nbma;
+            }
+            $kader_file->save();
+        } elseif ($pp || $nbma) {
+            $kader_file = new KaderFile;
+            $kader_file->kader_id = $id;
+            $kader_file->filepp = $pp;
+            $kader_file->filenbma = $nbma;
+            $kader_file->save();
+        }
+
+        // rebuild education records
+        KaderEdu::where('kader_id', $id)->delete();
+        if (isset($req['jenjang'])) {
+            foreach ($req['jenjang'] as $key => $jenjang) {
+                if (!empty($jenjang)) {
+                    KaderEdu::create([
+                        'kader_id' => $id,
+                        'jenjang' => $jenjang,
+                        'eduyear' => $req['eduyear'][$key] ?? null,
+                    ]);
+                }
+            }
+        }
+
+        // rebuild training records
+        KaderTraining::where('kader_id', $id)->delete();
+        if (isset($req['trainingtype'])) {
+            foreach ($req['trainingtype'] as $key => $trainingtype) {
+                if (!empty($trainingtype)) {
+                    KaderTraining::create([
+                        'kader_id' => $id,
+                        'trainingtype' => $trainingtype,
+                        'trainingname' => $req['trainingname'][$key] ?? null,
+                    ]);
+                }
+            }
+        }
+
+        // rebuild internal org records
+        KaderOrgInt::where('kader_id', $id)->delete();
+        if (isset($req['orggrade'])) {
+            foreach ($req['orggrade'] as $key => $orggrade) {
+                if (!empty($orggrade)) {
+                    KaderOrgInt::create([
+                        'kader_id' => $id,
+                        'orggrade' => $orggrade,
+                        'orgintjabatan' => $req['orgintjabatan'][$key] ?? null,
+                        'orgintstart' => $req['orgintstart'][$key] ?? null,
+                        'orgintend' => $req['orgintend'][$key] ?? null,
+                    ]);
+                }
+            }
+        }
+
+        // rebuild external org records
+        KaderOrgExt::where('kader_id', $id)->delete();
+        if (isset($req['orgextname'])) {
+            foreach ($req['orgextname'] as $key => $orgextname) {
+                if (!empty($orgextname)) {
+                    KaderOrgExt::create([
+                        'kader_id' => $id,
+                        'orgextname' => $orgextname,
+                        'orgextjabatan' => $req['orgextjabatan'][$key] ?? null,
+                        'orgextstart' => $req['orgextstart'][$key] ?? null,
+                        'orgextend' => $req['orgextend'][$key] ?? null,
+                    ]);
+                }
+            }
+        }
+
+        return redirect()->route('kader.index')->with('success', 'Data kader berhasil diperbarui');
+    }
+
+    public function deleteKader($id)
+    {
+        try {
+            $id = Crypt::decrypt($id);
+        } catch (\Exception $e) {
+            // jika bukan encrypted, gunakan langsung
+        }
+
+        $kader = Kader::where('kader_id', $id)->whereNull('deleted_at')->first();
+        if (!$kader) {
+            return redirect()->route('kader.index')->with('error', 'Kader tidak ditemukan');
+        }
+
+        // soft delete kader info
+        $kader->delete();
+
+        // soft delete related records
+        KaderEdu::where('kader_id', $id)->delete();
+        KaderTraining::where('kader_id', $id)->delete();
+        KaderOrgInt::where('kader_id', $id)->delete();
+        KaderOrgExt::where('kader_id', $id)->delete();
+        KaderFile::where('kader_id', $id)->delete();
+
+        return redirect()->route('kader.index')->with('success', 'Kader berhasil dihapus');
     }
 
     public function pcaByPda($id)

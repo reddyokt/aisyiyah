@@ -195,6 +195,17 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
         Route::get('/', [KaderController::class, 'kaderIndex'])->name('index');
         Route::get('/create', [KaderController::class, 'createKader'])->name('create');
         Route::post('/', [KaderController::class, 'storeKader'])->name('store');
+        Route::post('/create', [KaderController::class, 'storeKader'])->name('store.legacy');
+
+        // edit/update
+        Route::get('/{id}/edit', [KaderController::class, 'editKader'])->name('edit');
+        Route::get('/edit/{id}', [KaderController::class, 'editKader'])->name('edit.legacy');
+        Route::put('/{id}', [KaderController::class, 'updateKader'])->name('update');
+        Route::put('/edit/{id}', [KaderController::class, 'updateKader'])->name('update.legacy');
+
+        // delete (soft delete)
+        Route::delete('/{id}', [KaderController::class, 'deleteKader'])->name('destroy');
+        Route::get('/delete/{id}', [KaderController::class, 'deleteKader'])->name('destroy.legacy');
 
         Route::get('/pcabypda/{id}', [KaderController::class, 'pcaByPda'])->name('pcabypda');
         Route::get('/detail/{id}', [KaderController::class, 'kaderDetail'])->name('detail');

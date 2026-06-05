@@ -3,8 +3,17 @@
     Create_Kader
 @endsection
 @section('css')
-    <!-- DataTables -->
     <link href="{{ URL::asset('/assets/libs/select2/select2.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet" />
+    <style>
+        .crop-container {
+            max-height: 500px;
+        }
+        .crop-container img {
+            max-width: 100%;
+            display: block;
+        }
+    </style>
 @endsection
 
 @section('content')
@@ -24,6 +33,7 @@
                     <div class="card">
                         @csrf
                         <input type="hidden" value="{{ Auth::id() }}" name="id">
+                        <input type="hidden" id="cropped_image" name="cropped_image" value="">
                         <a href="#addkader-personaldata-collapse" class="text-dark" data-bs-toggle="collapse"
                             aria-expanded="true" aria-controls="addkader-personaldata-collapse">
                             <div class="p-4">
@@ -47,8 +57,8 @@
 
                             </div>
                         </a>
-                        <div id="addproduct-personaldata-collapse" class="collapse show"
-                            data-bs-parent="#addproduct-accordion">
+                        <div id="addkader-personaldata-collapse" class="collapse show"
+                            data-bs-parent="#addkader-accordion">
                             <div class="p-4 border-top">
                                 <div class="row">
                                     <div class="col-lg-4">
@@ -67,9 +77,9 @@
                                     </div>
                                     <div class="col-lg-4">
                                         <div class="mb-3">
-                                            <label class="form-label" for="price">Email</label>
-                                            <input id="email" name="email" type="text" class="form-control"
-                                                type="email" placeholder="Enter email">
+                                            <label class="form-label" for="email">Email</label>
+                                            <input id="email" name="email" type="email" class="form-control"
+                                                placeholder="Enter email">
                                         </div>
                                     </div>
                                 </div>
@@ -101,7 +111,7 @@
                                     <div class="col-lg-4">
                                         <div class="mb-3">
                                             <label class="form-label" for="anak">Jumlah Anak</label>
-                                            <input id="phone" name="anak" type="number" class="form-control"
+                                            <input id="anak" name="anak" type="number" class="form-control"
                                                 placeholder="Enter jumlah anak">
                                         </div>
                                     </div>
@@ -121,15 +131,19 @@
                                     </div>
                                     <div class="col-lg-4">
                                         <div class="mb-3">
-                                            <label class="form-label" for="profile_picture">Profile Picture</label>
-                                            <input id="profile_picture" name="profile_picture" type="file" class="form-control"
-                                                accept="image/png, image/jpeg"placeholder="#">
+                                            <label class="form-label" for="profile_picture_input">Profile Picture</label>
+                                            <input id="profile_picture_input" type="file" class="form-control"
+                                                accept="image/png, image/jpeg">
+                                            <div id="pp_preview_wrapper" style="display:none; margin-top:10px;">
+                                                <img id="pp_preview" src="" class="img-thumbnail" style="max-height:120px;">
+                                                <button type="button" class="btn btn-sm btn-outline-danger mt-1" id="pp_recrop">Crop Ulang</button>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="col-lg-4">
                                         <div class="mb-3">
-                                            <label class="form-label" for="image">Alamat</label>
-                                            <textarea class="form-control" type="text" name="address" id="address"></textarea>
+                                            <label class="form-label" for="address">Alamat</label>
+                                            <textarea class="form-control" name="address" id="address"></textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -138,7 +152,7 @@
                     </div>
                     <div class="card">
                         <a href="#addkader-aisyiyah-collapse" class="text-dark" data-bs-toggle="collapse"
-                            aria-expanded="true" aria-controls="addproduct-billinginfo-collapse">
+                            aria-expanded="true" aria-controls="addkader-aisyiyah-collapse">
                             <div class="p-4">
                                 <div class="d-flex align-items-center">
                                     <div class="flex-shrink-0 me-3">
@@ -161,64 +175,63 @@
                             </div>
                         </a>
                         <div id="addkader-aisyiyah-collapse" class="collapse show"
-                            data-bs-parent="#addproduct-accordion">
+                            data-bs-parent="#addkader-accordion">
                             <div class="p-4 border-top">
-                                <form>
-                                    <div class="row">
-                                        <div class="col-lg-6">
-                                            <div class="mb-3">
-                                                <label class="form-label" for="nbm">NBM</label>
-                                                <input id="nbm" name="nbm" data-parsley-type="number"
-                                                    data-parsley-maxlength="7" class="form-control"
-                                                    placeholder="Enter  NMB">
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-6">
-                                            <div class="mb-3">
-                                                <label class="form-label" for="nba">NBA</label>
-                                                <input id="nba" name="nba" data-parsley-type="number"
-                                                    data-parsley-maxlength="7" class="form-control"
-                                                    placeholder="Enter  NBA">
-                                            </div>
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            <label class="form-label" for="nbm">NBM</label>
+                                            <input id="nbm" name="nbm" data-parsley-type="number"
+                                                data-parsley-maxlength="7" class="form-control"
+                                                placeholder="Enter  NBM">
                                         </div>
                                     </div>
-                                    <div class="row">
-                                        <div class="col-lg-6">
-                                            <div class="mb-3">
-                                                <label class="form-label" class="control-label">Pilih Ranting</label>
-                                                <select class="select2 form-select form-control select2-multiple"
-                                                    name="ranting" id="ranting" data-live-search="true">
-                                                    @foreach ($ranting as $key => $value)
-                                                        <option value="{{ $value->ranting_id }}">
-                                                            {{ $value->ranting_name }}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-6" id="divpca" style="display: none">
-                                            <div class="col-md-12 mb-3">
-                                                <label class="form-label" class="control-label">Pilih PCA</label>
-                                                <select class="form-select form-control" name="pca" id="pca"
-                                                    data-control="select2"
-                                                    data-placeholder="{{ __('account.placeholder_pca') }}">
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-6">
-                                            <div class="col-md-12 mb-3 mb-3">
-                                                <label class="form-label" for="nbma">Scan/Foto NBM atau NBA</label>
-                                                <input id="nbma" name="nbma" type="file" class="form-control"
-                                                    accept="image/png, image/jpeg"placeholder="#">
-                                            </div>
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            <label class="form-label" for="nba">NBA</label>
+                                            <input id="nba" name="nba" data-parsley-type="number"
+                                                data-parsley-maxlength="7" class="form-control"
+                                                placeholder="Enter  NBA">
                                         </div>
                                     </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            <label class="form-label" class="control-label">Pilih Ranting</label>
+                                            <select class="select2 form-select form-control select2-multiple"
+                                                name="ranting" id="ranting" data-live-search="true">
+                                                @foreach ($ranting as $key => $value)
+                                                    <option value="{{ $value->ranting_id }}">
+                                                        {{ $value->ranting_name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6" id="divpca" style="display: none">
+                                        <div class="col-md-12 mb-3">
+                                            <label class="form-label" class="control-label">Pilih PCA</label>
+                                            <select class="form-select form-control" name="pca" id="pca"
+                                                data-control="select2"
+                                                data-placeholder="{{ __('account.placeholder_pca') }}">
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="col-md-12 mb-3 mb-3">
+                                            <label class="form-label" for="nbma">Scan/Foto NBM atau NBA</label>
+                                            <input id="nbma" name="nbma" type="file" class="form-control"
+                                                accept="image/png, image/jpeg" placeholder="#">
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     <div class="card">
-                        <a href="#addkader-organization-collapse" class="text-dark" data-bs-toggle="collapse"
-                            aria-expanded="true" aria-controls="addproduct-billinginfo-collapse">
+                        <a href="#addkader-edu-collapse" class="text-dark" data-bs-toggle="collapse"
+                            aria-expanded="true" aria-controls="addkader-edu-collapse">
                             <div class="p-4">
                                 <div class="d-flex align-items-center">
                                     <div class="flex-shrink-0 me-3">
@@ -235,13 +248,11 @@
                                     <div class="flex-shrink-0">
                                         <i class="mdi mdi-chevron-up accor-down-icon font-size-24"></i>
                                     </div>
-
                                 </div>
-
                             </div>
                         </a>
-                        <div id="addkader-organization-collapse" class="collapse show"
-                            data-bs-parent="#addproduct-accordion">
+                        <div id="addkader-edu-collapse" class="collapse show"
+                            data-bs-parent="#addkader-accordion">
                             <div class="p-4 border-top">
                                 <div class="flex-grow-1 overflow-hidden">
                                     <h6 class="font-size-16 mb-1" style="display: inline;">Tambah Riwayat Pendidikan</h6>
@@ -277,8 +288,8 @@
 
                             </div>
                         </div>
-                        <div id="addkader-organization-collapse" class="collapse show"
-                            data-bs-parent="#addproduct-accordion">
+                        <div id="addkader-training-collapse" class="collapse show"
+                            data-bs-parent="#addkader-accordion">
                             <div class="p-4 border-top">
                                 <div class="flex-grow-1 overflow-hidden">
                                     <h6 class="font-size-16 mb-1" style="display: inline;">Tambah Riwayat Pelatihan</h6>
@@ -308,8 +319,8 @@
 
                             </div>
                         </div>
-                        <div id="addkader-organization-collapse" class="collapse show"
-                            data-bs-parent="#addproduct-accordion">
+                        <div id="addkader-orgint-collapse" class="collapse show"
+                            data-bs-parent="#addkader-accordion">
                             <div class="p-4 border-top">
                                 <div class="flex-grow-1 overflow-hidden">
                                     <h6 class="font-size-16 mb-1" style="display: inline;">Tambah Riwayat Organisasi
@@ -358,8 +369,8 @@
                             </div>
                         </div>
 
-                        <div id="addkader-organization-collapse" class="collapse show"
-                            data-bs-parent="#addproduct-accordion">
+                        <div id="addkader-orgext-collapse" class="collapse show"
+                            data-bs-parent="#addkader-accordion">
                             <div class="p-4 border-top">
                                 <div class="flex-grow-1 overflow-hidden">
                                     <h6 class="font-size-16 mb-1" style="display: inline;">Tambah Riwayat Organisasi
@@ -415,49 +426,121 @@
             </div>
             <!-----end-tombol----->
         </div>
-        </div>
-        </div>
     </form>
+
+    <!-- Crop Modal -->
+    <div class="modal fade" id="cropModal" tabindex="-1" data-bs-backdrop="static" aria-labelledby="cropModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cropModalLabel">Crop Foto Profile (Ratio 3:4)</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="crop-container">
+                        <img id="crop_image" src="" alt="Crop Preview">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="crop_button">Crop & Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
+
 @section('script')
     <script src="{{ URL::asset('assets/js/account.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     <script>
-        $('.add1').on('click', add1);
+        // --- Cropper setup ---
+        var cropper;
+        var cropModal;
 
+        document.addEventListener('DOMContentLoaded', function() {
+            cropModal = new bootstrap.Modal(document.getElementById('cropModal'));
+
+            document.getElementById('profile_picture_input').addEventListener('change', function(e) {
+                var file = e.target.files[0];
+                if (file) {
+                    var reader = new FileReader();
+                    reader.onload = function(ev) {
+                        document.getElementById('crop_image').src = ev.target.result;
+                        cropModal.show();
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            document.getElementById('cropModal').addEventListener('shown.bs.modal', function() {
+                var image = document.getElementById('crop_image');
+                if (cropper) {
+                    cropper.destroy();
+                }
+                cropper = new Cropper(image, {
+                    aspectRatio: 3 / 4,
+                    viewMode: 2,
+                    autoCropArea: 1,
+                    responsive: true,
+                    background: false,
+                });
+            });
+
+            document.getElementById('cropModal').addEventListener('hidden.bs.modal', function() {
+                if (cropper) {
+                    cropper.destroy();
+                    cropper = null;
+                }
+            });
+
+            document.getElementById('crop_button').addEventListener('click', function() {
+                if (cropper) {
+                    var canvas = cropper.getCroppedCanvas({
+                        width: 450,
+                        height: 600,
+                    });
+                    var dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+                    document.getElementById('cropped_image').value = dataUrl;
+                    document.getElementById('pp_preview').src = dataUrl;
+                    document.getElementById('pp_preview_wrapper').style.display = 'block';
+                    document.getElementById('crop_image').src = '';
+                    cropModal.hide();
+                }
+            });
+
+            document.getElementById('pp_recrop').addEventListener('click', function() {
+                document.getElementById('profile_picture_input').value = '';
+                document.getElementById('profile_picture_input').click();
+            });
+        });
+
+        // --- Dynamic fields ---
+        $('.add1').on('click', add1);
         function add1() {
             var new_input =
-                '<div class="col-lg-6" id="1"><div class="mb-3" ><input type="hidden" value="1" id="total_chq"><select class="select2 form-select form-control select2-multiple" name="jenjang[]" data-live-search="true"><option value="SD">SD</option><option value="SMP">SMP</option><option value="SMA">SMA</option><option value="S1">S1</option><option value="S2">S2</option><option value="S3">S3</option></select></div></div><div class="col-lg-6" id="2"><div class="col-md-12 mb-3"><input id="name" name="eduyear[]" type="number" class="form-control" placeholder="Enter  Name"></div></div>'
-
+                '<div class="col-lg-6"><div class="mb-3"><select class="select2 form-select form-control select2-multiple" name="jenjang[]" data-live-search="true"><option value="SD">SD</option><option value="SMP">SMP</option><option value="SMA">SMA</option><option value="S1">S1</option><option value="S2">S2</option><option value="S3">S3</option></select></div></div><div class="col-lg-6"><div class="col-md-12 mb-3"><input name="eduyear[]" type="text" pattern="\\d*" maxlength="4" class="form-control" placeholder="Enter Year"></div></div>'
             $('#school').append(new_input);
         }
-    </script>
-    <script>
-        $('.add2').on('click', add2);
 
+        $('.add2').on('click', add2);
         function add2() {
             var new_input =
-                '<div class="col-lg-6"><div class="mb-3"><select class="select2 form-select form-control select2-multiple"name="trainingtype[]" data-live-search="true"><option selected disabled>Pilih Jenis Pelatihan</option><option value="Internal">Internal</option><option value="Eksternal">Eksternal</option></select></div></div><div class="col-lg-6"><div class="col-md-12 mb-3"><input id="trainingname" name="trainingname[]" type="text"class="form-control" placeholder="Enter Name"></div></div>'
-
+                '<div class="col-lg-6"><div class="mb-3"><select class="select2 form-select form-control select2-multiple" name="trainingtype[]" data-live-search="true"><option selected disabled>Pilih Jenis Pelatihan</option><option value="Internal">Internal</option><option value="Eksternal">Eksternal</option></select></div></div><div class="col-lg-6"><div class="col-md-12 mb-3"><input name="trainingname[]" type="text" class="form-control" placeholder="Enter Name"></div></div>'
             $('#training').append(new_input);
         }
-    </script>
-    <script>
-        $('.add3').on('click', add3);
 
+        $('.add3').on('click', add3);
         function add3() {
             var new_input =
-                '<div class="col-lg-3"><div class="mb-3"><select class="select2 form-select form-control select2-multiple" name="orggrade[]" data-live-search="true"><option selected disabled>Pilih Tingkat</option><option value="PPA">PPA</option><option value="PWA">PWA</option><option value="PDA">PDA</option><option value="PCA">PCA</option><option value="PRA">PRA</option></select></div></div><div class="col-lg-5"><div class="col-md-12 mb-3"><input id="orgintjabatan" name="orgintjabatan[]" type="text" class="form-control" placeholder="Enter  Name"></div></div><div class="col-lg-2"><div class="col-md-12 mb-3"><input id="orgintstart" name="orgintstart[]" type="number" class="form-control" placeholder="Enter  Year"></div></div><div class="col-lg-2"><div class="col-md-12 mb-3"><input id="orgintend" name="orgintend[]" type="number" class="form-control" placeholder="Enter  Year"></div></div>'
-
+                '<div class="col-lg-3"><div class="mb-3"><select class="select2 form-select form-control select2-multiple" name="orggrade[]" data-live-search="true"><option selected disabled>Pilih Tingkat</option><option value="PPA">PPA</option><option value="PWA">PWA</option><option value="PDA">PDA</option><option value="PCA">PCA</option><option value="PRA">PRA</option></select></div></div><div class="col-lg-5"><div class="col-md-12 mb-3"><input name="orgintjabatan[]" type="text" class="form-control" placeholder="Enter Name"></div></div><div class="col-lg-2"><div class="col-md-12 mb-3"><input name="orgintstart[]" type="text" pattern="\\d*" maxlength="4" class="form-control" placeholder="Enter Year"></div></div><div class="col-lg-2"><div class="col-md-12 mb-3"><input name="orgintend[]" type="text" pattern="\\d*" maxlength="4" class="form-control" placeholder="Enter Year"></div></div>'
             $('#organization').append(new_input);
         }
-    </script>
-    <script>
-        $('.add4').on('click', add4);
 
+        $('.add4').on('click', add4);
         function add4() {
             var new_input =
-                '<div class="col-lg-4"><div class="mb-3"><input id="orgextname" name="orgextname[]" type="text" class="form-control" placeholder="Enter  Name"></div></div><div class="col-lg-4"><div class="col-md-12 mb-3"><input id="orgextjabatan" name="orgextjabatan[]" type="text" class="form-control" placeholder="Enter  Name"></div></div><div class="col-lg-2"><div class="col-md-12 mb-3"><input id="orgextstart" name="orgextstart[]" type="number" class="form-control" placeholder="Enter  Year"></div></div><div class="col-lg-2"><div class="col-md-12 mb-3"><input id="orgextend" name="orgextend[]" type="number" class="form-control" placeholder="Enter  Year"></div></div>'
-
+                '<div class="col-lg-4"><div class="mb-3"><input name="orgextname[]" type="text" class="form-control" placeholder="Enter Name"></div></div><div class="col-lg-4"><div class="col-md-12 mb-3"><input name="orgextjabatan[]" type="text" class="form-control" placeholder="Enter Name"></div></div><div class="col-lg-2"><div class="col-md-12 mb-3"><input name="orgextstart[]" type="text" pattern="\\d*" maxlength="4" class="form-control" placeholder="Enter Year"></div></div><div class="col-lg-2"><div class="col-md-12 mb-3"><input name="orgextend[]" type="text" pattern="\\d*" maxlength="4" class="form-control" placeholder="Enter Year"></div></div>'
             $('#organizationex').append(new_input);
         }
     </script>
